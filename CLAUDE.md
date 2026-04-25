@@ -1,0 +1,86 @@
+# CLAUDE.md
+
+Full spec: `SPEC.md` — read it before any non-trivial task.
+
+## What this is
+
+m3m — Local-first, AI-native knowledge base. Tauri (Rust) + React/TS desktop app.
+Markdown files on disk are the canonical data store. Everything else is a cache.
+
+Repo: https://github.com/ronyevernaes/m3m
+
+## Repo layout
+
+```
+src-tauri/        # Rust backend — Tauri commands, file watcher, SQLite, LanceDB
+src/              # React frontend — editor, graph, search UI
+src/lib/          # Shared TS utilities
+src-tauri/src/
+  commands/       # #[tauri::command] handlers (one file per domain)
+  indexer.rs      # vault watcher + SQLite rebuild
+  ai.rs           # Ollama HTTP client + embedding pipeline
+  sync.rs         # Automerge CRDT + encryption
+.vault/           # Runtime-generated, never commit
+```
+
+## Hard rules
+
+- `.md` files are the source of truth — never write app state into them beyond frontmatter
+- Never remove unknown frontmatter keys
+- All SQLite / LanceDB / sync state must be rebuildable from `.md` files alone
+- No network calls from any P0 feature — offline must always work
+- Vault contents never leave the device unless user explicitly enables cloud AI or sync
+
+## Stack at a glance
+
+| What | Choice |
+|---|---|
+| Desktop shell | Tauri |
+| Frontend | React + TypeScript |
+| Editor | TipTap |
+| Graph | React Flow |
+| Local DB | SQLite via sqlx |
+| Vectors | LanceDB (Rust SDK) |
+| AI | Ollama sidecar → `localhost:11434` |
+| Mobile | Capacitor (same React codebase) |
+| Sync | Automerge CRDT + libsodium |
+| Telegram bridge | Cloudflare Worker + Telegram Bot API (premium) |
+
+## Key patterns
+
+**Tauri IPC** — all backend calls go through `#[tauri::command]`. No direct filesystem access from the frontend.
+
+**Indexer** — `notify` watcher fires on any `.md` save → re-parse frontmatter → upsert SQLite → re-embed if content changed. Idempotent.
+
+**AI calls** — always check `settings.ai_backend` first: `local` → Ollama, `cloud` → user API key, `off` → disable AI UI. Never hardcode a model name; read from settings.
+
+**Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation.
+
+## Prompt conventions
+
+When starting work on a specific area, include the relevant section from `SPEC.md`:
+- New feature → paste the feature bullet + P-level
+- Sync work → paste `## Sync Architecture` from SPEC
+- AI work → paste `## AI Architecture` from SPEC
+- Stack question → paste `## Stack` from SPEC
+- Telegram bridge work → paste `## Telegram Bridge Architecture` from SPEC
+
+## Testing conventions
+
+**Frontend — Vitest**
+- Test files: `src/**/*.{test,spec}.{ts,tsx}`
+- Coverage targets: `src/lib/`, `src/store/`, `src/hooks/` — pure logic only
+- Skip component tests unless behaviour is non-trivial; UI is low ROI in Tauri env
+- Mock Tauri IPC: `vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }))`
+- Commands: `bun test:run` · `bun test:ui` · `bun test:coverage`
+
+**Rust — cargo test**
+- Test files: `src-tauri/src/tests/` — one file per domain module
+- Keep Tauri commands thin; test the underlying functions they call
+- High-value targets: indexer, frontmatter parser, CRDT merge, encrypt/decrypt round-trips
+- Command: `cargo test` (run from `src-tauri/`)
+
+**What not to test**
+- Tauri command wrappers directly (require runtime)
+- React component markup (snapshot tests)
+- Third-party library behaviour (TipTap, React Flow, Automerge internals)
