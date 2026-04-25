@@ -40,7 +40,7 @@
 | Free sync | BYOS — S3 / Dropbox / iCloud |
 | Premium relay | Cloudflare Workers + R2 |
 | Encryption | libsodium secretbox (client-side, Argon2id key derivation) |
-| Auth | Clerk or Supabase Auth |
+| Auth | Clerk, Better Auth or Supabase Auth |
 | Billing | Stripe |
 | Telegram bridge | Cloudflare Worker + Telegram Bot API (shares sync infra) |
 
