@@ -89,6 +89,16 @@
     0 0 0 1px oklch(0.59 0.27 293 / 0.20),
     0 0 20px 0 oklch(0.59 0.27 293 / 0.25);
 
+  /* ── Semantic surface tokens (resolved via :root vars below) ── */
+  --color-background:    var(--bg);
+  --color-foreground:    var(--text);
+  --color-heading:       var(--text-h);
+  --color-border:        var(--border);
+  --color-muted:         var(--code-bg);
+  --color-accent:        var(--accent);
+  --color-accent-subtle: var(--accent-bg);
+  --color-accent-border: var(--accent-border);
+
   /* ── Animations ─────────────────────────────── */
   --animate-fade-in:      fade-in      0.2s ease-out;
   --animate-slide-up:     slide-up     0.3s cubic-bezier(0.16, 1, 0.3, 1);

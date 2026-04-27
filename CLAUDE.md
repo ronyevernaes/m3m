@@ -84,3 +84,13 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 - Tauri command wrappers directly (require runtime)
 - React component markup (snapshot tests)
 - Third-party library behaviour (TipTap, React Flow, Automerge internals)
+
+# Design System Rules — Tailwind CSS
+
+- All colors via tailwind.config.ts theme tokens (e.g. `bg-brand-500`, never `bg-[#3B82F6]`)
+- Use `cn()` from lib/utils for all conditional classes
+- Variants via cva() (class-variance-authority) — not inline ternaries
+- Dark mode via `dark:` prefix (class strategy)
+- No inline styles, no arbitrary values unless truly one-off
+- Every component accepts a `className` prop for consumer overrides
+- Spacing follows the 4px grid: use scale values (p-2, p-4, gap-6), not arbitrary

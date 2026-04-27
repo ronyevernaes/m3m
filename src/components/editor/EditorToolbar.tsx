@@ -1,7 +1,10 @@
 import type { Editor } from '@tiptap/core';
+import { cva } from 'class-variance-authority';
+import { cn } from '../../lib/cn';
 
 interface ToolbarProps {
   editor: Editor;
+  className?: string;
 }
 
 interface ToolbarButton {
@@ -10,7 +13,17 @@ interface ToolbarButton {
   isActive: () => boolean;
 }
 
-export function EditorToolbar({ editor }: ToolbarProps) {
+const toolbarBtn = cva('px-2 py-1 text-sm rounded font-mono', {
+  variants: {
+    active: {
+      true:  'bg-accent-subtle text-accent border border-accent-border',
+      false: 'text-foreground hover:bg-muted',
+    },
+  },
+  defaultVariants: { active: false },
+});
+
+export function EditorToolbar({ editor, className }: ToolbarProps) {
   const buttons: ToolbarButton[] = [
     {
       label: 'B',
@@ -78,16 +91,12 @@ export function EditorToolbar({ editor }: ToolbarProps) {
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 border-b border-[var(--border)] px-3 py-1">
+    <div className={cn('flex flex-wrap gap-1 border-b border-border px-3 py-1', className)}>
       {buttons.map((btn) => (
         <button
           key={btn.label}
           onClick={btn.onClick}
-          className={`px-2 py-1 text-sm rounded font-mono ${
-            btn.isActive()
-              ? 'bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]'
-              : 'text-[var(--text)] hover:bg-[var(--code-bg)]'
-          }`}
+          className={toolbarBtn({ active: btn.isActive() })}
           type="button"
         >
           {btn.label}

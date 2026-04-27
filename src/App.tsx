@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { appDataDir } from '@tauri-apps/api/path';
 import { useVault } from './hooks/useVault';
 import { Editor } from './components/editor/Editor';
+import { cn } from './lib/cn';
 
 export default function App() {
   const { notes, currentNote, vaultPath, setVaultPath, loadNotes, openNote, newNote, error } = useVault();
@@ -22,13 +23,13 @@ export default function App() {
   }, [vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[var(--bg)]">
-      <aside className="w-64 flex-shrink-0 border-r border-[var(--border)] flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
-          <span className="font-semibold text-[var(--text-h)] text-sm">m3m</span>
+    <div className="flex h-screen w-screen overflow-hidden bg-background">
+      <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <span className="font-semibold text-heading text-sm">m3m</span>
           <button
             onClick={() => newNote()}
-            className="text-xs px-2 py-1 rounded bg-[var(--accent-bg)] text-[var(--accent)]"
+            className="text-xs px-2 py-1 rounded bg-accent-subtle text-accent"
           >
             + New
           </button>
@@ -36,7 +37,7 @@ export default function App() {
 
         {error && (
           <div
-            className="mx-2 mt-2 px-3 py-2 rounded text-xs text-red-700 bg-red-50 border border-red-200 break-words"
+            className="mx-2 mt-2 px-3 py-2 rounded text-xs text-error-700 bg-error-50 border border-error-200 break-words"
             title={error}
           >
             {error}
@@ -48,11 +49,12 @@ export default function App() {
             <li key={note.id || note.path}>
               <button
                 onClick={() => openNote(note.path)}
-                className={`w-full text-left px-4 py-2 text-sm truncate ${
+                className={cn(
+                  'w-full text-left px-4 py-2 text-sm truncate',
                   currentNote?.path === note.path
-                    ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
-                    : 'text-[var(--text)] hover:bg-[var(--code-bg)]'
-                }`}
+                    ? 'bg-accent-subtle text-accent'
+                    : 'text-foreground hover:bg-muted',
+                )}
               >
                 {note.title || 'Untitled'}
               </button>
@@ -61,7 +63,7 @@ export default function App() {
         </ul>
 
         {vaultPath && (
-          <div className="px-3 py-2 border-t border-[var(--border)] text-xs text-[var(--text)] truncate" title={vaultPath}>
+          <div className="px-3 py-2 border-t border-border text-xs text-foreground truncate" title={vaultPath}>
             {vaultPath}
           </div>
         )}

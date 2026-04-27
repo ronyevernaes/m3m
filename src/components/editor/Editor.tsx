@@ -7,6 +7,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useVault } from '../../hooks/useVault';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
 import { EditorToolbar } from './EditorToolbar';
+import { cn } from '../../lib/cn';
 
 const lowlight = createLowlight(all);
 
@@ -86,30 +87,30 @@ export function Editor({ className }: EditorProps) {
 
   if (!currentNote) {
     return (
-      <div className="flex items-center justify-center h-full text-[var(--text)]">
+      <div className="flex items-center justify-center h-full text-foreground">
         Select or create a note to start editing.
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col h-full ${className ?? ''}`}>
-      <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2">
-        <h1 className="text-lg font-medium text-[var(--text-h)] truncate">
+    <div className={cn('flex flex-col h-full', className)}>
+      <div className="flex items-center justify-between border-b border-border px-4 py-2">
+        <h1 className="text-lg font-medium text-heading truncate">
           {currentNote.frontmatter.title || 'Untitled'}
         </h1>
         <div className="flex items-center gap-2">
           {error && (
-            <span className="text-xs text-red-500 max-w-xs truncate" title={error}>
+            <span className="text-xs text-error-500 max-w-xs truncate" title={error}>
               Error: {error}
             </span>
           )}
           {isDirty && !error && (
-            <span className="text-xs text-[var(--text)]">Unsaved changes</span>
+            <span className="text-xs text-foreground">Unsaved changes</span>
           )}
           <button
             onClick={handleSave}
-            className="text-xs px-3 py-1 rounded bg-[var(--accent)] text-white"
+            className="text-xs px-3 py-1 rounded bg-accent text-white"
           >
             Save
           </button>
