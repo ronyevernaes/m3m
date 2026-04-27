@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { appDataDir } from '@tauri-apps/api/path';
 import { useVault } from './hooks/useVault';
 import { Editor } from './components/editor/Editor';
+import { Button } from './components/ui/Button';
 import { cn } from './lib/cn';
 
 export default function App() {
@@ -27,12 +28,9 @@ export default function App() {
       <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <span className="font-semibold text-heading text-sm">m3m</span>
-          <button
-            onClick={() => newNote()}
-            className="text-xs px-2 py-1 rounded bg-accent-subtle text-accent"
-          >
+          <Button intent="ghost" size="sm" onClick={() => newNote()}>
             + New
-          </button>
+          </Button>
         </div>
 
         {error && (
@@ -47,17 +45,19 @@ export default function App() {
         <ul className="flex-1 overflow-y-auto py-2">
           {notes.map((note) => (
             <li key={note.id || note.path}>
-              <button
+              <Button
+                intent="ghost"
+                size="sm"
                 onClick={() => openNote(note.path)}
                 className={cn(
-                  'w-full text-left px-4 py-2 text-sm truncate',
+                  'w-full justify-start rounded-none font-normal truncate',
                   currentNote?.path === note.path
-                    ? 'bg-accent-subtle text-accent'
-                    : 'text-foreground hover:bg-muted',
+                    ? 'bg-accent-subtle text-accent hover:bg-accent-subtle hover:text-accent'
+                    : 'text-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
                 {note.title || 'Untitled'}
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

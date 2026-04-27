@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core';
-import { cva } from 'class-variance-authority';
+import { Button } from '../ui/Button';
 import { cn } from '../../lib/cn';
 
 interface ToolbarProps {
@@ -13,15 +13,6 @@ interface ToolbarButton {
   isActive: () => boolean;
 }
 
-const toolbarBtn = cva('px-2 py-1 text-sm rounded font-mono', {
-  variants: {
-    active: {
-      true:  'bg-accent-subtle text-accent border border-accent-border',
-      false: 'text-foreground hover:bg-muted',
-    },
-  },
-  defaultVariants: { active: false },
-});
 
 export function EditorToolbar({ editor, className }: ToolbarProps) {
   const buttons: ToolbarButton[] = [
@@ -93,14 +84,18 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
   return (
     <div className={cn('flex flex-wrap gap-1 border-b border-border px-3 py-1', className)}>
       {buttons.map((btn) => (
-        <button
+        <Button
           key={btn.label}
+          intent="ghost"
+          size="sm"
           onClick={btn.onClick}
-          className={toolbarBtn({ active: btn.isActive() })}
-          type="button"
+          className={cn(
+            'font-mono',
+            btn.isActive() && 'bg-accent-subtle text-accent border border-accent-border hover:bg-accent-subtle hover:text-accent',
+          )}
         >
           {btn.label}
-        </button>
+        </Button>
       ))}
     </div>
   );

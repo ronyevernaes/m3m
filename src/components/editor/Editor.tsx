@@ -7,6 +7,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useVault } from '../../hooks/useVault';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
 import { EditorToolbar } from './EditorToolbar';
+import { Button } from '../ui/Button';
 import { cn } from '../../lib/cn';
 
 const lowlight = createLowlight(all);
@@ -108,12 +109,9 @@ export function Editor({ className }: EditorProps) {
           {isDirty && !error && (
             <span className="text-xs text-foreground">Unsaved changes</span>
           )}
-          <button
-            onClick={handleSave}
-            className="text-xs px-3 py-1 rounded bg-accent text-white"
-          >
+          <Button intent="primary" size="sm" onClick={handleSave}>
             Save
-          </button>
+          </Button>
         </div>
       </div>
 
