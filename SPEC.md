@@ -284,3 +284,5 @@ notify watcher → index → AI pipeline
 | Document | Saved to vault assets, linked from an inbox note |
 
 **Offline behaviour:** payloads queue in R2 until desktop app connects. No message is lost. Queue TTL: 30 days.
+
+**Production Build:** the Google Fonts @import requires internet. For production Tauri builds that must stay fully offline, the fonts should be bundled with @font-face pointing at local files and the @import removed

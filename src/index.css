@@ -1,3 +1,115 @@
+/*
+ * Google Fonts — requires internet. For offline-first builds, bundle fonts
+ * locally with @font-face and remove this import.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+@theme {
+  /* ── Typography ─────────────────────────────── */
+  --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  /* ── Spacing (4 px base grid) ───────────────── */
+  --spacing: 0.25rem; /* 1 unit = 4 px */
+
+  /* ── Brand — violet-purple ───────────────────── */
+  --color-brand-50:  oklch(0.97 0.015 293);
+  --color-brand-100: oklch(0.94 0.035 293);
+  --color-brand-200: oklch(0.88 0.07  293);
+  --color-brand-300: oklch(0.79 0.13  293);
+  --color-brand-400: oklch(0.68 0.20  293);
+  --color-brand-500: oklch(0.59 0.27  293); /* ≈ #aa3bff */
+  --color-brand-600: oklch(0.50 0.24  293);
+  --color-brand-700: oklch(0.42 0.20  293);
+  --color-brand-800: oklch(0.33 0.15  293);
+  --color-brand-900: oklch(0.25 0.10  293);
+  --color-brand-950: oklch(0.17 0.06  293);
+
+  /* ── Neutral — cool slate with violet tint ───── */
+  --color-neutral-50:  oklch(0.985 0.003 286);
+  --color-neutral-100: oklch(0.965 0.005 286);
+  --color-neutral-200: oklch(0.928 0.008 286);
+  --color-neutral-300: oklch(0.869 0.011 286);
+  --color-neutral-400: oklch(0.745 0.016 286);
+  --color-neutral-500: oklch(0.609 0.018 286);
+  --color-neutral-600: oklch(0.487 0.016 286);
+  --color-neutral-700: oklch(0.381 0.013 286);
+  --color-neutral-800: oklch(0.274 0.010 286);
+  --color-neutral-900: oklch(0.206 0.008 286);
+  --color-neutral-950: oklch(0.138 0.006 286);
+
+  /* ── Semantic: success ───────────────────────── */
+  --color-success-50:  oklch(0.974 0.023 150);
+  --color-success-100: oklch(0.944 0.054 150);
+  --color-success-200: oklch(0.888 0.102 150);
+  --color-success-300: oklch(0.798 0.154 150);
+  --color-success-400: oklch(0.699 0.179 150);
+  --color-success-500: oklch(0.600 0.171 150);
+  --color-success-600: oklch(0.505 0.143 150);
+  --color-success-700: oklch(0.400 0.113 150);
+  --color-success-800: oklch(0.305 0.082 150);
+  --color-success-900: oklch(0.217 0.057 150);
+
+  /* ── Semantic: warning ───────────────────────── */
+  --color-warning-50:  oklch(0.982 0.023 93);
+  --color-warning-100: oklch(0.959 0.058 93);
+  --color-warning-200: oklch(0.920 0.107 93);
+  --color-warning-300: oklch(0.872 0.161 93);
+  --color-warning-400: oklch(0.812 0.186 93);
+  --color-warning-500: oklch(0.750 0.175 93);
+  --color-warning-600: oklch(0.660 0.155 93);
+  --color-warning-700: oklch(0.517 0.124 93);
+  --color-warning-800: oklch(0.390 0.094 93);
+  --color-warning-900: oklch(0.295 0.071 93);
+
+  /* ── Semantic: error ─────────────────────────── */
+  --color-error-50:  oklch(0.978 0.018 16);
+  --color-error-100: oklch(0.944 0.044 16);
+  --color-error-200: oklch(0.890 0.092 16);
+  --color-error-300: oklch(0.820 0.150 16);
+  --color-error-400: oklch(0.733 0.202 16);
+  --color-error-500: oklch(0.637 0.237 16);
+  --color-error-600: oklch(0.539 0.220 16);
+  --color-error-700: oklch(0.441 0.181 16);
+  --color-error-800: oklch(0.347 0.140 16);
+  --color-error-900: oklch(0.263 0.106 16);
+
+  /* ── Border radius ──────────────────────────── */
+  --radius-sm:   0.25rem;  /*  4 px */
+  --radius-md:   0.5rem;   /*  8 px */
+  --radius-lg:   0.75rem;  /* 12 px */
+  --radius-pill: 9999px;
+
+  /* ── Shadows ────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.08), 0 1px 3px 0 oklch(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 25px -5px oklch(0 0 0 / 0.15), 0 8px 10px -6px oklch(0 0 0 / 0.10);
+  --shadow-glow:
+    0 0 0 1px oklch(0.59 0.27 293 / 0.20),
+    0 0 20px 0 oklch(0.59 0.27 293 / 0.25);
+
+  /* ── Animations ─────────────────────────────── */
+  --animate-fade-in:      fade-in      0.2s ease-out;
+  --animate-slide-up:     slide-up     0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-pulse-subtle: pulse-subtle 2.5s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1;   }
+    50%       { opacity: 0.6; }
+  }
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -11,9 +123,9 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --sans: 'Inter', system-ui, 'Segoe UI', sans-serif;
+  --heading: 'Bricolage Grotesque', system-ui, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
