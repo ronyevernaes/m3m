@@ -13,6 +13,7 @@ interface VaultState {
   setNotes: (notes: NoteListItem[]) => void;
   setCurrentNote: (note: Note | null) => void;
   updateCurrentNoteBody: (body: string) => void;
+  updateCurrentNoteTitle: (title: string) => void;
   markClean: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -32,6 +33,13 @@ export const useVaultStore = create<VaultState>((set) => ({
   updateCurrentNoteBody: (body) =>
     set((state) => ({
       currentNote: state.currentNote ? { ...state.currentNote, body } : null,
+      isDirty: state.currentNote ? true : state.isDirty,
+    })),
+  updateCurrentNoteTitle: (title) =>
+    set((state) => ({
+      currentNote: state.currentNote
+        ? { ...state.currentNote, frontmatter: { ...state.currentNote.frontmatter, title } }
+        : null,
       isDirty: state.currentNote ? true : state.isDirty,
     })),
   markClean: () => set({ isDirty: false }),

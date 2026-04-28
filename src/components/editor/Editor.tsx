@@ -17,7 +17,7 @@ interface EditorProps {
 }
 
 export function Editor({ className }: EditorProps) {
-  const { currentNote, updateCurrentNoteBody, saveCurrentNote, isDirty, error } = useVault();
+  const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, isDirty, error } = useVault();
   const suppressUpdate = useRef(false);
 
   const editor = useEditor({
@@ -97,9 +97,15 @@ export function Editor({ className }: EditorProps) {
   return (
     <div className={cn('flex flex-col h-full', className)}>
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
-        <h1 className="text-lg font-medium text-heading truncate">
-          {currentNote.frontmatter.title || 'Untitled'}
-        </h1>
+        <input
+          type="text"
+          value={currentNote.frontmatter.title}
+          onChange={(e) => updateCurrentNoteTitle(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+          className="text-lg font-medium text-heading bg-transparent border-none outline-none w-full min-w-0 focus:outline-none placeholder:text-foreground/40"
+          placeholder="Untitled"
+        />
         <div className="flex items-center gap-2">
           {error && (
             <span className="text-xs text-error-500 max-w-xs truncate" title={error}>

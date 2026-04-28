@@ -130,6 +130,7 @@ export function useVault() {
     error: store.error,
     setVaultPath: store.setVaultPath,
     updateCurrentNoteBody: store.updateCurrentNoteBody,
+    updateCurrentNoteTitle: store.updateCurrentNoteTitle,
     loadNotes,
     openNote,
     saveCurrentNote,
