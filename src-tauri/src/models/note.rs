@@ -14,3 +14,12 @@ pub struct RawNote {
     pub path: String,
     pub content: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SearchResult {
+    pub id: String,
+    pub path: String,
+    pub title: String,
+    pub snippet: String,
+    pub tags: Vec<String>,
+}

@@ -21,3 +21,11 @@ export interface NoteListItem {
   modified: string;
   tags: string[];
 }
+
+export interface SearchResult {
+  id: string;
+  path: string;
+  title: string;
+  snippet: string;
+  tags: string[];
+}

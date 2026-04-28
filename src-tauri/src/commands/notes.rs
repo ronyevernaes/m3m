@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::command;
+use crate::frontmatter;
 use crate::models::note::{NoteListItem, RawNote};
 
 #[command]
@@ -22,8 +23,20 @@ pub async fn list_notes(vault_path: String) -> Result<Vec<NoteListItem>, String>
             continue;
         }
         let content = fs::read_to_string(&file_path).map_err(|e| e.to_string())?;
-        let item = extract_list_item(&content, file_path.to_string_lossy().to_string());
-        notes.push(item);
+        let path_str = file_path.to_string_lossy().to_string();
+        let parsed = frontmatter::parse(&content);
+        let title = if parsed.frontmatter.title.is_empty() {
+            frontmatter::title_from_path(&path_str)
+        } else {
+            parsed.frontmatter.title
+        };
+        notes.push(NoteListItem {
+            id: parsed.frontmatter.id,
+            title,
+            path: path_str,
+            modified: parsed.frontmatter.modified,
+            tags: parsed.frontmatter.tags,
+        });
     }
 
     notes.sort_by(|a, b| b.modified.cmp(&a.modified));
@@ -61,47 +74,6 @@ pub async fn create_note(vault_path: String, title: String) -> Result<RawNote, S
     })
 }
 
-fn extract_list_item(content: &str, path: String) -> NoteListItem {
-    let mut in_fm = false;
-    let mut id = String::new();
-    let mut title = String::new();
-    let mut modified = String::new();
-    let mut tags: Vec<String> = Vec::new();
-
-    for (i, line) in content.lines().enumerate() {
-        if i == 0 && line == "---" {
-            in_fm = true;
-            continue;
-        }
-        if in_fm && line == "---" {
-            break;
-        }
-        if !in_fm {
-            break;
-        }
-
-        if let Some(v) = line.strip_prefix("id: ") {
-            id = v.trim().to_string();
-        } else if let Some(v) = line.strip_prefix("title: ") {
-            title = v.trim().to_string();
-        } else if let Some(v) = line.strip_prefix("modified: ") {
-            modified = v.trim().to_string();
-        } else if let Some(v) = line.strip_prefix("tags: ") {
-            tags = parse_inline_yaml_list(v);
-        }
-    }
-
-    // Fall back to filename as title if frontmatter has none.
-    if title.is_empty() {
-        title = Path::new(&path)
-            .file_stem()
-            .unwrap_or_default()
-            .to_string_lossy()
-            .to_string();
-    }
-
-    NoteListItem { id, title, path, modified, tags }
-}
 
 fn slugify(title: &str) -> String {
     let slug: String = title
@@ -132,10 +104,3 @@ fn resolve_unique_path(path: PathBuf) -> PathBuf {
     }
 }
 
-fn parse_inline_yaml_list(s: &str) -> Vec<String> {
-    let s = s.trim().trim_start_matches('[').trim_end_matches(']');
-    if s.is_empty() {
-        return Vec::new();
-    }
-    s.split(',').map(|t| t.trim().to_string()).collect()
-}

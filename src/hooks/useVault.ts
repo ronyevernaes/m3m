@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { useVaultStore } from '../store/vault';
-import { listNotes, readNote, writeNote } from '../lib/ipc';
+import { listNotes, readNote, writeNote, openVault } from '../lib/ipc';
 import { parseNote, stringifyNote } from '../lib/frontmatter';
 import { newUlid } from '../lib/ulid';
 
@@ -101,6 +102,25 @@ export function useVault() {
     [loadNotes],
   );
 
+  const initVault = useCallback(async (path: string) => {
+    store.setVaultPath(path);
+    store.setLoading(true);
+    store.setError(null);
+    try {
+      await openVault(path);
+      const items = await listNotes(path);
+      store.setNotes(items);
+    } catch (err) {
+      store.setError(String(err));
+    } finally {
+      store.setLoading(false);
+    }
+    const unlisten = await listen('vault:index-updated', () => {
+      loadNotes();
+    });
+    return unlisten;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return {
     vaultPath: store.vaultPath,
     notes: store.notes,
@@ -114,5 +134,6 @@ export function useVault() {
     openNote,
     saveCurrentNote,
     newNote,
+    initVault,
   };
 }
