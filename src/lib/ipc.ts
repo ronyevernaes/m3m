@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { NoteListItem, SearchResult } from '../types/note';
+import type { NoteListItem, SearchResult, BacklinkItem } from '../types/note';
 
 export const listNotes = (vaultPath: string) =>
   invoke<NoteListItem[]>('list_notes', { vaultPath });
@@ -18,3 +18,6 @@ export const openVault = (vaultPath: string) =>
 
 export const searchNotes = (query: string, limit = 20) =>
   invoke<SearchResult[]>('search_notes', { query, limit });
+
+export const getBacklinks = (noteId: string) =>
+  invoke<BacklinkItem[]>('get_backlinks', { noteId });

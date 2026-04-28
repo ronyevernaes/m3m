@@ -3,6 +3,7 @@ import { appDataDir } from '@tauri-apps/api/path';
 import { useVault } from './hooks/useVault';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
+import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
 import { cn } from './lib/cn';
 
 export default function App() {
@@ -72,6 +73,8 @@ export default function App() {
       <main className="flex-1 flex flex-col overflow-hidden">
         <Editor />
       </main>
+
+      {currentNote && <BacklinkPanel onOpenNote={openNote} />}
     </div>
   );
 }

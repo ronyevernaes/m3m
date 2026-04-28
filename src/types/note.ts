@@ -29,3 +29,10 @@ export interface SearchResult {
   snippet: string;
   tags: string[];
 }
+
+export interface BacklinkItem {
+  id: string;
+  path: string;
+  title: string;
+  modified: string;
+}

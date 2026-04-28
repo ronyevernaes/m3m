@@ -23,3 +23,11 @@ pub struct SearchResult {
     pub snippet: String,
     pub tags: Vec<String>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BacklinkItem {
+    pub id: String,
+    pub path: String,
+    pub title: String,
+    pub modified: String,
+}

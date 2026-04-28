@@ -139,3 +139,80 @@ async fn index_vault_skips_vault_directory() {
     let count = indexer::index_vault(&pool, dir.path()).await.unwrap();
     assert_eq!(count, 1);
 }
+
+// ---------------------------------------------------------------------------
+// Backlink tests
+// ---------------------------------------------------------------------------
+
+#[tokio::test]
+async fn backlinks_stored_when_note_links_another() {
+    let (pool, dir) = pool_with_schema().await;
+    write_note(&dir, "b.md", "---\nid: id-b\ntitle: Note B\n---\n");
+    write_note(&dir, "a.md", "---\nid: id-a\ntitle: Note A\nlinks: [id-b]\n---\n");
+    indexer::index_vault(&pool, dir.path()).await.unwrap();
+
+    let backlinks = indexer::get_backlinks(&pool, "id-b").await.unwrap();
+    assert_eq!(backlinks.len(), 1);
+    assert_eq!(backlinks[0].id, "id-a");
+    assert_eq!(backlinks[0].title, "Note A");
+}
+
+#[tokio::test]
+async fn backlinks_not_stored_when_source_has_no_id() {
+    let (pool, dir) = pool_with_schema().await;
+    write_note(&dir, "anon.md", "---\nlinks: [id-target]\n---\n");
+    indexer::index_vault(&pool, dir.path()).await.unwrap();
+
+    let backlinks = indexer::get_backlinks(&pool, "id-target").await.unwrap();
+    assert!(backlinks.is_empty());
+}
+
+#[tokio::test]
+async fn stale_links_removed_on_reindex() {
+    let (pool, dir) = pool_with_schema().await;
+    let path = write_note(&dir, "a.md", "---\nid: id-a\ntitle: A\nlinks: [id-b]\n---\n");
+    indexer::index_file(&pool, &path, dir.path()).await.unwrap();
+
+    fs::write(&path, "---\nid: id-a\ntitle: A\n---\n").unwrap();
+    indexer::index_file(&pool, &path, dir.path()).await.unwrap();
+
+    let backlinks = indexer::get_backlinks(&pool, "id-b").await.unwrap();
+    assert!(backlinks.is_empty());
+}
+
+#[tokio::test]
+async fn multiple_sources_link_to_same_target() {
+    let (pool, dir) = pool_with_schema().await;
+    write_note(&dir, "a.md", "---\nid: id-a\ntitle: A\nlinks: [id-c]\n---\n");
+    write_note(&dir, "b.md", "---\nid: id-b\ntitle: B\nlinks: [id-c]\n---\n");
+    write_note(&dir, "c.md", "---\nid: id-c\ntitle: C\n---\n");
+    indexer::index_vault(&pool, dir.path()).await.unwrap();
+
+    let backlinks = indexer::get_backlinks(&pool, "id-c").await.unwrap();
+    assert_eq!(backlinks.len(), 2);
+}
+
+#[tokio::test]
+async fn forward_reference_stored_without_error() {
+    let (pool, dir) = pool_with_schema().await;
+    let path = write_note(&dir, "a.md", "---\nid: id-a\ntitle: A\nlinks: [id-future]\n---\n");
+    indexer::index_file(&pool, &path, dir.path()).await.unwrap();
+
+    // Forward reference is stored: id-a already appears as a backlink of id-future
+    // even though id-future is not yet a note in the vault.
+    let backlinks = indexer::get_backlinks(&pool, "id-future").await.unwrap();
+    assert_eq!(backlinks.len(), 1);
+    assert_eq!(backlinks[0].id, "id-a");
+}
+
+#[tokio::test]
+async fn remove_file_cleans_outbound_links() {
+    let (pool, dir) = pool_with_schema().await;
+    let path = write_note(&dir, "a.md", "---\nid: id-a\ntitle: A\nlinks: [id-b]\n---\n");
+    indexer::index_file(&pool, &path, dir.path()).await.unwrap();
+    indexer::remove_file(&pool, &path, dir.path()).await.unwrap();
+
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM note_links")
+        .fetch_one(&pool).await.unwrap();
+    assert_eq!(count, 0);
+}

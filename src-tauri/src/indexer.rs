@@ -6,7 +6,7 @@ use sha2::{Digest, Sha256};
 use sqlx::{SqlitePool, sqlite::SqliteConnectOptions};
 
 use crate::frontmatter;
-use crate::models::note::SearchResult;
+use crate::models::note::{BacklinkItem, SearchResult};
 
 // ---------------------------------------------------------------------------
 // Database bootstrap
@@ -81,6 +81,22 @@ async fn bootstrap_schema(pool: &SqlitePool) -> anyhow::Result<()> {
             INSERT INTO notes_fts(rowid, title, body, tags)
             VALUES (new.rowid, new.title, new.body, new.tags);
         END",
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS note_links (
+            source_id  TEXT NOT NULL,
+            target_id  TEXT NOT NULL,
+            PRIMARY KEY (source_id, target_id)
+        )",
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        "CREATE INDEX IF NOT EXISTS idx_note_links_target ON note_links (target_id)",
     )
     .execute(pool)
     .await?;
@@ -162,16 +178,50 @@ pub async fn index_file(pool: &SqlitePool, path: &Path, vault_root: &Path) -> an
     .execute(pool)
     .await?;
 
+    // Replace outbound links for this source. Delete-then-insert clears stale links.
+    if !fm.id.is_empty() {
+        sqlx::query("DELETE FROM note_links WHERE source_id = ?1")
+            .bind(&fm.id)
+            .execute(pool)
+            .await?;
+        for target_id in &fm.links {
+            if target_id.is_empty() { continue; }
+            sqlx::query(
+                "INSERT OR IGNORE INTO note_links (source_id, target_id) VALUES (?1, ?2)",
+            )
+            .bind(&fm.id)
+            .bind(target_id)
+            .execute(pool)
+            .await?;
+        }
+    }
+
     Ok(())
 }
 
 /// Remove a note from the index by path.
 pub async fn remove_file(pool: &SqlitePool, path: &Path, vault_root: &Path) -> anyhow::Result<()> {
     let rel = path_to_relative(path, vault_root);
+
+    // Fetch id before deleting the row so we can clean note_links.
+    let note_id: Option<String> =
+        sqlx::query_scalar("SELECT id FROM notes WHERE path = ?1")
+            .bind(&rel)
+            .fetch_optional(pool)
+            .await?;
+
+    if let Some(id) = note_id {
+        sqlx::query("DELETE FROM note_links WHERE source_id = ?1")
+            .bind(&id)
+            .execute(pool)
+            .await?;
+    }
+
     sqlx::query("DELETE FROM notes WHERE path = ?1")
         .bind(&rel)
         .execute(pool)
         .await?;
+
     Ok(())
 }
 
@@ -217,6 +267,36 @@ struct SearchRow {
     title: String,
     tags: String,
     snippet: String,
+}
+
+// ---------------------------------------------------------------------------
+// Backlinks
+// ---------------------------------------------------------------------------
+
+pub async fn get_backlinks(pool: &SqlitePool, note_id: &str) -> anyhow::Result<Vec<BacklinkItem>> {
+    let rows = sqlx::query_as::<_, BacklinkRow>(
+        "SELECT n.id, n.path, n.title, n.modified
+         FROM note_links nl
+         JOIN notes n ON n.id = nl.source_id
+         WHERE nl.target_id = ?1
+         ORDER BY n.modified DESC",
+    )
+    .bind(note_id)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows
+        .into_iter()
+        .map(|r| BacklinkItem { id: r.id, path: r.path, title: r.title, modified: r.modified })
+        .collect())
+}
+
+#[derive(sqlx::FromRow)]
+struct BacklinkRow {
+    id: String,
+    path: String,
+    title: String,
+    modified: String,
 }
 
 // ---------------------------------------------------------------------------
