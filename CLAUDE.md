@@ -12,14 +12,18 @@ Repo: https://github.com/ronyevernaes/m3m
 ## Repo layout
 
 ```
-src-tauri/        # Rust backend — Tauri commands, file watcher, SQLite, LanceDB
-src/              # React frontend — editor, graph, search UI
-src/lib/          # Shared TS utilities
 src-tauri/src/
   commands/       # #[tauri::command] handlers (one file per domain)
   indexer.rs      # vault watcher + SQLite rebuild
-  ai.rs           # Ollama HTTP client + embedding pipeline
-  sync.rs         # Automerge CRDT + encryption
+  frontmatter.rs  # custom YAML frontmatter parser
+  ai.rs           # stub — Ollama integration (P1)
+  sync.rs         # stub — Automerge CRDT (P2)
+src/
+  components/     # React UI components
+  hooks/          # useVault, useBacklinks, useSearch, useAI
+  store/          # Zustand stores: vault.ts, ui.ts, settings.ts
+  types/          # TypeScript interfaces (note.ts, graph.ts)
+  lib/            # frontmatter.ts, markdown.ts, ulid.ts, ipc.ts, cn.ts
 .vault/           # Runtime-generated, never commit
 ```
 
@@ -48,13 +52,17 @@ src-tauri/src/
 
 ## Key patterns
 
-**Tauri IPC** — all backend calls go through `#[tauri::command]`. No direct filesystem access from the frontend.
+**Tauri IPC** — all backend calls go through `#[tauri::command]`. No direct filesystem access from the frontend. IPC bridge lives in `src/lib/ipc.ts`.
 
-**Indexer** — `notify` watcher fires on any `.md` save → re-parse frontmatter → upsert SQLite → re-embed if content changed. Idempotent.
+**Indexer** — `notify` watcher fires on any `.md` save → re-parse frontmatter → upsert SQLite → emit `vault:index-updated` event. Idempotent. Currently scans vault root only (non-recursive).
+
+**Reactive updates** — frontend hooks (`useVault`, `useBacklinks`) listen for the `vault:index-updated` Tauri event to refresh state without polling.
+
+**File naming** — `{slug}-{ulid}.md`. Generated on create; renamed automatically when the note title changes.
 
 **AI calls** — always check `settings.ai_backend` first: `local` → Ollama, `cloud` → user API key, `off` → disable AI UI. Never hardcode a model name; read from settings.
 
-**Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation.
+**Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation. `links[]` are explicit outlinks only — body wikilink extraction is not implemented yet.
 
 ## Prompt conventions
 

@@ -51,17 +51,16 @@ Each vault is a self-contained folder. Multiple vaults can exist anywhere on the
 
 ```
 ~/Documents/WorkVault/          # vault root — any folder name, any location
-├── note-slug.md
-├── subfolder/
-│   └── nested-note.md
+├── note-title-01J5ABCDEF.md   # filename = {slug}-{ulid}.md
 └── .vault/                     # app-managed, one per vault
-    ├── meta.json               # vault id (ulid), name, created date
-    ├── index.json              # note manifest, timestamps, tags
-    ├── graph.json              # backlinks + outlinks per note id
-    ├── embeddings.lance        # LanceDB vector index
-    ├── settings.json           # vault-level prefs (AI backend, theme override)
-    └── sync.bin                # Automerge doc (absent if sync off)
+    ├── index.db                # SQLite — notes, FTS5, note_links (implemented)
+    ├── meta.json               # vault id (ulid), name, created date (planned)
+    ├── embeddings.lance        # LanceDB vector index (planned, P1)
+    ├── settings.json           # vault-level prefs (planned)
+    └── sync.bin                # Automerge doc, absent if sync off (planned, P2)
 ```
+
+**Note:** `.vault/index.db` is the only app-managed file currently written at runtime. All other `.vault/` files are planned. Subfolder scanning is not yet implemented — vault root only.
 
 ### Global app registry
 
@@ -108,29 +107,51 @@ The registry is the only file the app writes outside vault folders. Deleting it 
 ```yaml
 ---
 id: <ulid>
-title: string
-created: ISO8601
-modified: ISO8601
-tags: [string]
-links: [ulid]   # explicit outlinks; backlinks derived at index time
+title: Note Title
+created: 2025-01-01T12:00:00Z
+modified: 2025-01-01T12:00:00Z
+tags:
+  - tag1
+  - tag2
+links:
+  - <target-note-ulid>   # explicit outlinks only; body wikilink extraction not yet implemented
 ---
 ```
 
 Unknown frontmatter keys are preserved — never removed by the app.
 
+### SQLite schema (`.vault/index.db`)
+
+```sql
+CREATE TABLE notes (
+  id TEXT, path TEXT UNIQUE, title TEXT,
+  created TEXT, modified TEXT,
+  tags TEXT,       -- JSON array
+  body TEXT, body_hash TEXT, indexed_at TEXT
+);
+CREATE VIRTUAL TABLE notes_fts USING fts5(title, body, tags, content='notes', content_rowid='rowid');
+-- auto-maintained by INSERT/UPDATE/DELETE triggers
+
+CREATE TABLE note_links (
+  source_id TEXT, target_id TEXT,
+  PRIMARY KEY (source_id, target_id)
+);
+CREATE INDEX idx_note_links_target ON note_links (target_id);
+```
+
 ## Features
 
 ### P0 — MVP
 
-- Markdown editor — block-level, writes plain `.md` on save
-- Vault watcher — `notify` crate rebuilds SQLite index on `.md` change
-- Full-text search — SQLite FTS5
-- Backlink panel
-- Tag sidebar — derived from frontmatter
-- Daily note — `YYYY-MM-DD.md`, auto-links to previous day
-- Graph view — React Flow, nodes = notes, edges = links
-- Settings — vault path, theme, AI backend (local / cloud / off)
-- Vault Manager — open, close, create, rename, remove vaults (see below)
+- ✅ Markdown editor — TipTap, writes plain `.md` on save; inline title editing in editor header
+- ✅ Vault watcher — `notify` crate rebuilds SQLite on `.md` change; emits `vault:index-updated`
+- ✅ Full-text search — SQLite FTS5 with snippets
+- ✅ Backlink panel — derived from `note_links` table, live-updated on watcher events
+- ✅ Tag sidebar — derived from frontmatter `tags`, per-tag note filtering
+- ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
+- ⬜ Graph view — React Flow, nodes = notes, edges = links
+- ⬜ Settings UI — vault path, theme, AI backend (local / cloud / off)
+- ⬜ Vault Manager — open, close, create, rename, remove vaults (see below)
 
 ### P1 — AI (requires Ollama or API key)
 
