@@ -13,6 +13,9 @@ export const writeNote = (path: string, content: string) =>
 export const createNote = (vaultPath: string, title: string) =>
   invoke<{ path: string; content: string }>('create_note', { vaultPath, title });
 
+export const renameNote = (oldPath: string, newPath: string) =>
+  invoke<void>('rename_note', { oldPath, newPath });
+
 export const openVault = (vaultPath: string) =>
   invoke<number>('open_vault', { vaultPath });
 

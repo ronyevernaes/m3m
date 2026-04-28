@@ -44,6 +44,7 @@ pub fn run() {
             commands::notes::read_note,
             commands::notes::write_note,
             commands::notes::create_note,
+            commands::notes::rename_note,
             commands::vault::open_vault,
             commands::search::search_notes,
             commands::graph::get_backlinks,

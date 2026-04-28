@@ -87,6 +87,11 @@ fn slugify(title: &str) -> String {
         .join("-")
 }
 
+#[command]
+pub async fn rename_note(old_path: String, new_path: String) -> Result<(), String> {
+    fs::rename(&old_path, &new_path).map_err(|e| e.to_string())
+}
+
 fn resolve_unique_path(path: PathBuf) -> PathBuf {
     if !path.exists() {
         return path;

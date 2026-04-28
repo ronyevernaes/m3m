@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { useVaultStore } from '../store/vault';
-import { listNotes, readNote, writeNote, openVault } from '../lib/ipc';
+import { listNotes, readNote, writeNote, renameNote, openVault } from '../lib/ipc';
 import { parseNote, stringifyNote } from '../lib/frontmatter';
 import { newUlid } from '../lib/ulid';
 
@@ -37,7 +37,7 @@ export function useVault() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveCurrentNote = useCallback(async (bodyOverride?: string) => {
-    const { currentNote, setLoading, setError, setCurrentNote } = useVaultStore.getState();
+    const { currentNote, vaultPath, setLoading, setError, setCurrentNote } = useVaultStore.getState();
     if (!currentNote) return;
     setLoading(true);
     setError(null);
@@ -46,8 +46,22 @@ export function useVault() {
         ? { ...currentNote, body: bodyOverride }
         : currentNote;
       const rawContent = stringifyNote(noteToSave);
-      await writeNote(currentNote.path, rawContent);
-      const updatedNote = parseNote(rawContent, currentNote.path);
+
+      let targetPath = currentNote.path;
+      const id = noteToSave.frontmatter.id;
+      if (id && vaultPath) {
+        const title = noteToSave.frontmatter.title;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'untitled';
+        const filename = `${slug}-${id.slice(-8).toLowerCase()}.md`;
+        targetPath = `${vaultPath.replace(/\/$/, '')}/${filename}`;
+      }
+
+      if (targetPath !== currentNote.path) {
+        await renameNote(currentNote.path, targetPath);
+      }
+
+      await writeNote(targetPath, rawContent);
+      const updatedNote = parseNote(rawContent, targetPath);
       setCurrentNote(updatedNote);
       await loadNotes();
     } catch (err) {
