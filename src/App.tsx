@@ -4,10 +4,14 @@ import { useVault } from './hooks/useVault';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
 import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
+import { TagList } from './components/sidebar/TagList';
+import { useUiStore } from './store/ui';
 import { cn } from './lib/cn';
 
 export default function App() {
   const { notes, currentNote, vaultPath, setVaultPath, loadNotes, openNote, newNote, error } = useVault();
+  const { selectedTag, setSelectedTag } = useUiStore();
+  const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
 
   useEffect(() => {
     if (!vaultPath) {
@@ -21,7 +25,10 @@ export default function App() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (vaultPath) loadNotes();
+    if (vaultPath) {
+      setSelectedTag(null);
+      loadNotes();
+    }
   }, [vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -43,8 +50,8 @@ export default function App() {
           </div>
         )}
 
-        <ul className="flex-1 overflow-y-auto py-2">
-          {notes.map((note) => (
+        <ul className="flex-1 min-h-0 overflow-y-auto py-2">
+          {displayedNotes.map((note) => (
             <li key={note.id || note.path}>
               <Button
                 intent="ghost"
@@ -62,6 +69,8 @@ export default function App() {
             </li>
           ))}
         </ul>
+
+        <TagList notes={notes} />
 
         {vaultPath && (
           <div className="px-3 py-2 border-t border-border text-xs text-foreground truncate" title={vaultPath}>
