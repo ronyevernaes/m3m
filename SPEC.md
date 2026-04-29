@@ -54,13 +54,13 @@ Each vault is a self-contained folder. Multiple vaults can exist anywhere on the
 ├── note-title-01J5ABCDEF.md   # filename = {slug}-{ulid}.md
 └── .vault/                     # app-managed, one per vault
     ├── index.db                # SQLite — notes, FTS5, note_links (implemented)
-    ├── meta.json               # vault id (ulid), name, created date (planned)
+    ├── meta.json               # vault name, created date (implemented)
     ├── embeddings.lance        # LanceDB vector index (planned, P1)
     ├── settings.json           # vault-level prefs (planned)
     └── sync.bin                # Automerge doc, absent if sync off (planned, P2)
 ```
 
-**Note:** `.vault/index.db` is the only app-managed file currently written at runtime. All other `.vault/` files are planned. Subfolder scanning is not yet implemented — vault root only.
+**Note:** `.vault/index.db` and `.vault/meta.json` are written at runtime. `embeddings.lance`, `settings.json`, and `sync.bin` are planned. Subfolder scanning is not yet implemented — vault root only.
 
 ### Global app registry
 
@@ -151,7 +151,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
 - ⬜ Graph view — React Flow, nodes = notes, edges = links
 - ⬜ Settings UI — vault path, theme, AI backend (local / cloud / off)
-- ⬜ Vault Manager — open, close, create, rename, remove vaults (see below)
+- ✅ Vault Manager — open, close, create, rename, remove vaults (see below)
 
 ### P1 — AI (requires Ollama or API key)
 

@@ -14,15 +14,16 @@ Repo: https://github.com/ronyevernaes/m3m
 ```
 src-tauri/src/
   commands/       # #[tauri::command] handlers (one file per domain)
+  registry.rs     # read/write registry.json (vault list); no Tauri types — pure std
   indexer.rs      # vault watcher + SQLite rebuild
   frontmatter.rs  # custom YAML frontmatter parser
   ai.rs           # stub — Ollama integration (P1)
   sync.rs         # stub — Automerge CRDT (P2)
 src/
-  components/     # React UI components
-  hooks/          # useVault, useBacklinks, useSearch, useAI
-  store/          # Zustand stores: vault.ts, ui.ts, settings.ts
-  types/          # TypeScript interfaces (note.ts, graph.ts)
+  components/     # React UI — includes components/vault/ for Vault Manager UI
+  hooks/          # useVault, useVaultRegistry, useBacklinks, useSearch, useAI
+  store/          # Zustand stores: vault.ts (notes + registry state), ui.ts, settings.ts
+  types/          # TypeScript interfaces: note.ts, vault.ts, graph.ts
   lib/            # frontmatter.ts, markdown.ts, ulid.ts, ipc.ts, cn.ts
 .vault/           # Runtime-generated, never commit
 ```
@@ -53,6 +54,8 @@ src/
 ## Key patterns
 
 **Tauri IPC** — all backend calls go through `#[tauri::command]`. No direct filesystem access from the frontend. IPC bridge lives in `src/lib/ipc.ts`.
+
+**Registry** — `registry.rs` reads/writes `app_data_dir()/m3m/registry.json`. Load-mutate-save on every write (no in-memory cache). All vault commands call `registry_path(app_handle.path().app_data_dir())` to resolve the path at runtime.
 
 **Indexer** — `notify` watcher fires on any `.md` save → re-parse frontmatter → upsert SQLite → emit `vault:index-updated` event. Idempotent. Currently scans vault root only (non-recursive).
 
@@ -85,7 +88,7 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 **Rust — cargo test**
 - Test files: `src-tauri/src/tests/` — one file per domain module
 - Keep Tauri commands thin; test the underlying functions they call
-- High-value targets: indexer, frontmatter parser, CRDT merge, encrypt/decrypt round-trips
+- High-value targets: indexer, frontmatter parser, registry, CRDT merge, encrypt/decrypt round-trips
 - Command: `cargo test` (run from `src-tauri/`)
 
 **What not to test**
