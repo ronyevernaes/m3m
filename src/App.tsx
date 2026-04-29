@@ -1,29 +1,39 @@
-import { useEffect } from 'react';
-import { appDataDir } from '@tauri-apps/api/path';
+import { useEffect, useState } from 'react';
 import { useVault } from './hooks/useVault';
+import { useVaultRegistry } from './hooks/useVaultRegistry';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
 import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
 import { TagList } from './components/sidebar/TagList';
+import { WelcomeScreen } from './components/vault/WelcomeScreen';
+import { VaultSwitcher } from './components/vault/VaultSwitcher';
 import { useUiStore } from './store/ui';
 import { cn } from './lib/cn';
 
 export default function App() {
-  const { notes, currentNote, vaultPath, setVaultPath, loadNotes, openNote, newNote, error } = useVault();
+  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, error } = useVault();
+  const {
+    vaults,
+    activeVaultId,
+    registryLoading,
+    loadVaults,
+    createNewVault,
+    openExistingVault,
+    switchVault,
+    renameVaultEntry,
+    removeVaultEntry,
+    revealVaultEntry,
+  } = useVaultRegistry();
   const { selectedTag, setSelectedTag } = useUiStore();
+  const [showWelcomeCreate, setShowWelcomeCreate] = useState(false);
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
 
+  // Load registry on mount — restores last active vault automatically.
   useEffect(() => {
-    if (!vaultPath) {
-      // TODO: replace with vault picker (Vault Manager, P0)
-      appDataDir().then((dir) => {
-        const vault = `${dir.replace(/\/$/, '')}/vault`;
-        console.log('[App] vault path:', vault);
-        setVaultPath(vault);
-      });
-    }
+    loadVaults();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // When vault path changes, reload notes.
   useEffect(() => {
     if (vaultPath) {
       setSelectedTag(null);
@@ -31,12 +41,54 @@ export default function App() {
     }
   }, [vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // First launch: no vaults registered.
+  if (!registryLoading && vaults.length === 0) {
+    return (
+      <WelcomeScreen
+        onCreateNew={createNewVault}
+        onOpenExisting={openExistingVault}
+      />
+    );
+  }
+
+  // Show welcome create flow when triggered from the popover.
+  if (showWelcomeCreate) {
+    return (
+      <WelcomeScreen
+        onCreateNew={async (name, path) => {
+          const entry = await createNewVault(name, path);
+          setShowWelcomeCreate(false);
+          return entry;
+        }}
+        onOpenExisting={async () => {
+          const entry = await openExistingVault();
+          setShowWelcomeCreate(false);
+          return entry;
+        }}
+      />
+    );
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <span className="font-semibold text-heading text-sm">m3m</span>
-          <Button intent="ghost" size="sm" onClick={() => newNote()}>
+          <VaultSwitcher
+            vaults={vaults}
+            activeVaultId={activeVaultId}
+            onSwitch={switchVault}
+            onRename={renameVaultEntry}
+            onRemove={removeVaultEntry}
+            onReveal={revealVaultEntry}
+            onCreateNew={() => setShowWelcomeCreate(true)}
+            onOpenExisting={openExistingVault}
+          />
+          <Button
+            intent="ghost"
+            size="sm"
+            onClick={() => newNote()}
+            disabled={!vaultPath}
+          >
             + New
           </Button>
         </div>
@@ -71,12 +123,6 @@ export default function App() {
         </ul>
 
         <TagList notes={notes} />
-
-        {vaultPath && (
-          <div className="px-3 py-2 border-t border-border text-xs text-foreground truncate" title={vaultPath}>
-            {vaultPath}
-          </div>
-        )}
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">

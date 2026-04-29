@@ -77,18 +77,16 @@ describe('useVault', () => {
     });
 
     mockInvoke
-      .mockResolvedValueOnce('/vault/test.md') // write_note
-      .mockResolvedValueOnce([]); // list_notes
+      .mockResolvedValueOnce(undefined)          // rename_note (title slug differs from current filename)
+      .mockResolvedValueOnce('/vault/test-q69g5fav.md') // write_note
+      .mockResolvedValueOnce([]);                // list_notes
 
     const { result } = renderHook(() => useVault());
     await act(async () => {
       await result.current.saveCurrentNote();
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith(
-      'write_note',
-      expect.objectContaining({ path: '/vault/test.md' }),
-    );
+    expect(mockInvoke).toHaveBeenCalledWith('write_note', expect.objectContaining({ content: expect.stringContaining('title: Test') }));
     expect(result.current.isDirty).toBe(false);
   });
 });

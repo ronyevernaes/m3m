@@ -2,6 +2,7 @@ mod commands;
 pub mod frontmatter;
 pub mod indexer;
 mod models;
+pub mod registry;
 #[cfg(test)]
 mod tests;
 
@@ -26,6 +27,10 @@ pub struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(AppState { vault: Mutex::new(None) })
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -46,6 +51,14 @@ pub fn run() {
             commands::notes::create_note,
             commands::notes::rename_note,
             commands::vault::open_vault,
+            commands::vault::list_vaults,
+            commands::vault::create_vault,
+            commands::vault::register_vault,
+            commands::vault::rename_vault,
+            commands::vault::remove_vault,
+            commands::vault::close_vault,
+            commands::vault::reveal_vault,
+            commands::vault::pick_folder,
             commands::search::search_notes,
             commands::graph::get_backlinks,
         ])
