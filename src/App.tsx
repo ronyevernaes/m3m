@@ -7,6 +7,7 @@ import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
 import { TagList } from './components/sidebar/TagList';
 import { WelcomeScreen } from './components/vault/WelcomeScreen';
 import { VaultSwitcher } from './components/vault/VaultSwitcher';
+import { NewVaultDialog } from './components/vault/NewVaultDialog';
 import { useUiStore } from './store/ui';
 import { cn } from './lib/cn';
 
@@ -25,7 +26,7 @@ export default function App() {
     revealVaultEntry,
   } = useVaultRegistry();
   const { selectedTag, setSelectedTag } = useUiStore();
-  const [showWelcomeCreate, setShowWelcomeCreate] = useState(false);
+  const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
 
   // Load registry on mount — restores last active vault automatically.
@@ -51,24 +52,6 @@ export default function App() {
     );
   }
 
-  // Show welcome create flow when triggered from the popover.
-  if (showWelcomeCreate) {
-    return (
-      <WelcomeScreen
-        onCreateNew={async (name, path) => {
-          const entry = await createNewVault(name, path);
-          setShowWelcomeCreate(false);
-          return entry;
-        }}
-        onOpenExisting={async () => {
-          const entry = await openExistingVault();
-          setShowWelcomeCreate(false);
-          return entry;
-        }}
-      />
-    );
-  }
-
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
@@ -80,8 +63,7 @@ export default function App() {
             onRename={renameVaultEntry}
             onRemove={removeVaultEntry}
             onReveal={revealVaultEntry}
-            onCreateNew={() => setShowWelcomeCreate(true)}
-            onOpenExisting={openExistingVault}
+            onCreateNew={() => setShowNewVaultDialog(true)}
           />
           <Button
             intent="ghost"
@@ -130,6 +112,16 @@ export default function App() {
       </main>
 
       {currentNote && <BacklinkPanel onOpenNote={openNote} />}
+
+      {showNewVaultDialog && (
+        <NewVaultDialog
+          onConfirm={async (name, path, color) => {
+            await createNewVault(name, path, color);
+            setShowNewVaultDialog(false);
+          }}
+          onCancel={() => setShowNewVaultDialog(false)}
+        />
+      )}
     </div>
   );
 }

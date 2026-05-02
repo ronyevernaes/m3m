@@ -35,6 +35,8 @@ src/
 - All SQLite / LanceDB / sync state must be rebuildable from `.md` files alone
 - No network calls from any P0 feature — offline must always work
 - Vault contents never leave the device unless user explicitly enables cloud AI or sync
+- Every UI element has to be wrapped in a React component. Reuse as much as possible. Find patters and refactor. Make the code clean and comprehensive avoiding repetitiveness and verbosity. Use SOLID principles as long as they make sense. No multiple React components allowed in a single file. One component, one file.
+- Inline styles and ModuleCSS have to be avoided. Use TailwindCSS. If patterns emerge, create TailwindCSS components.
 
 ## Stack at a glance
 

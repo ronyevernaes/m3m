@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { VaultPopover } from './VaultPopover';
+import { ChevronDownIcon } from '../icons/ChevronDownIcon';
+import { cn } from '../../lib/cn';
 import type { VaultEntry } from '../../types/vault';
 
 interface VaultSwitcherProps {
@@ -10,7 +12,6 @@ interface VaultSwitcherProps {
   onRemove: (id: string) => Promise<void>;
   onReveal: (path: string) => void;
   onCreateNew: () => void;
-  onOpenExisting: () => void;
 }
 
 export function VaultSwitcher({
@@ -21,7 +22,6 @@ export function VaultSwitcher({
   onRemove,
   onReveal,
   onCreateNew,
-  onOpenExisting,
 }: VaultSwitcherProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -51,7 +51,7 @@ export function VaultSwitcher({
           style={{ backgroundColor: activeVault?.color ?? '#a855f7' }}
         />
         <span className="truncate">{activeVault?.name ?? 'm3m'}</span>
-        <ChevronDownIcon className={open ? 'rotate-180' : ''} />
+        <ChevronDownIcon className={cn(open && 'rotate-180')} />
       </button>
 
       {open && (
@@ -64,23 +64,8 @@ export function VaultSwitcher({
           onRemove={onRemove}
           onReveal={onReveal}
           onCreateNew={onCreateNew}
-          onOpenExisting={onOpenExisting}
         />
       )}
     </div>
-  );
-}
-
-function ChevronDownIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="currentColor"
-      className={`flex-shrink-0 transition-transform duration-150 ${className}`}
-    >
-      <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

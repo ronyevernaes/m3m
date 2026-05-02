@@ -34,9 +34,9 @@ export function useVaultRegistry() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const createNewVault = useCallback(async (name: string, path: string): Promise<VaultEntry> => {
-    const color = PRESET_COLORS[store.vaults.length % PRESET_COLORS.length];
-    const entry = await createVault(name, path, color);
+  const createNewVault = useCallback(async (name: string, path: string, color?: string): Promise<VaultEntry> => {
+    const resolvedColor = color ?? PRESET_COLORS[store.vaults.length % PRESET_COLORS.length];
+    const entry = await createVault(name, path, resolvedColor);
     store.upsertVault(entry);
     store.setActiveVaultId(entry.id);
     store.setVaultPath(entry.path);
