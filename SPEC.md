@@ -265,6 +265,13 @@ App detects VRAM on first launch and recommends models accordingly.
 6. **Cross-vault links** — should notes be linkable across vaults via `vault-id::note-id` syntax, or keep vaults strictly isolated?
 7. **Vault limit** — cap the number of registered vaults (e.g. 3 for free, unlimited for premium) or keep unlimited?
 
+## Open UX/UI Topics
+
+1. **Search** — does it makes sense to look for complete words or would it be better to look for contained words as well?
+2. **Empty State** — when the application starts, no vault is selected
+3. **Moving Panels** — main panels should be moveable and toggleable
+4. **Multi-Language** — implement multi-language support
+
 ## Telegram Bridge Architecture
 
 ```

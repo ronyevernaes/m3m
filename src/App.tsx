@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useVault } from './hooks/useVault';
 import { useVaultRegistry } from './hooks/useVaultRegistry';
+import { useSearch } from './hooks/useSearch';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
 import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
@@ -8,6 +9,8 @@ import { TagList } from './components/sidebar/TagList';
 import { WelcomeScreen } from './components/vault/WelcomeScreen';
 import { VaultSwitcher } from './components/vault/VaultSwitcher';
 import { NewVaultDialog } from './components/vault/NewVaultDialog';
+import { SearchBar } from './components/search/SearchBar';
+import { SearchResults } from './components/search/SearchResults';
 import { useUiStore } from './store/ui';
 import { cn } from './lib/cn';
 
@@ -26,8 +29,23 @@ export default function App() {
     revealVaultEntry,
   } = useVaultRegistry();
   const { selectedTag, setSelectedTag } = useUiStore();
+  const { results, isSearching, search, clearSearch } = useSearch();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      clearSearch();
+      return;
+    }
+    const timer = setTimeout(() => search(searchQuery), 200);
+    return () => clearTimeout(timer);
+  }, [searchQuery, search, clearSearch]);
 
   // Load registry on mount — restores last active vault automatically.
   useEffect(() => {
@@ -84,25 +102,36 @@ export default function App() {
           </div>
         )}
 
-        <ul className="flex-1 min-h-0 overflow-y-auto py-2">
-          {displayedNotes.map((note) => (
-            <li key={note.id || note.path}>
-              <Button
-                intent="ghost"
-                size="sm"
-                onClick={() => openNote(note.path)}
-                className={cn(
-                  'w-full justify-start rounded-none font-normal truncate',
-                  currentNote?.path === note.path
-                    ? 'bg-accent-subtle text-accent hover:bg-accent-subtle hover:text-accent'
-                    : 'text-foreground hover:bg-muted hover:text-foreground',
-                )}
-              >
-                {note.title || 'Untitled'}
-              </Button>
-            </li>
-          ))}
-        </ul>
+        <SearchBar query={searchQuery} onChange={handleSearchChange} />
+
+        {searchQuery.trim() ? (
+          <SearchResults
+            results={results}
+            isSearching={isSearching}
+            onSelect={openNote}
+            className="flex-1"
+          />
+        ) : (
+          <ul className="flex-1 min-h-0 overflow-y-auto py-2">
+            {displayedNotes.map((note) => (
+              <li key={note.id || note.path}>
+                <Button
+                  intent="ghost"
+                  size="sm"
+                  onClick={() => openNote(note.path)}
+                  className={cn(
+                    'w-full justify-start rounded-none font-normal truncate',
+                    currentNote?.path === note.path
+                      ? 'bg-accent-subtle text-accent hover:bg-accent-subtle hover:text-accent'
+                      : 'text-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  {note.title || 'Untitled'}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <TagList notes={notes} />
       </aside>

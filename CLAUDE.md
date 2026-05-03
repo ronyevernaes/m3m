@@ -77,6 +77,7 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 - AI work → paste `## AI Architecture` from SPEC
 - Stack question → paste `## Stack` from SPEC
 - Telegram bridge work → paste `## Telegram Bridge Architecture` from SPEC
+- Do not make any reference to Anthropic or Claude in the code or in the commit message
 
 ## Testing conventions
 
