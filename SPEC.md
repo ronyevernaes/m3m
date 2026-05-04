@@ -155,34 +155,34 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 
 ### P1 — AI (requires Ollama or API key)
 
-- Semantic search — nomic-embed + LanceDB
-- AI-inferred connections — cosine similarity + named entities + temporal co-occurrence + shared tags; rendered as "suggested links", user accepts/dismisses
-- Contradiction detection — LLM compares new note against similar older notes
-- Knowledge decay — freshness score, spaced resurfacing with AI review prompt
-- Daily synthesis — on open: unresolved threads, new connections, questions
-- Draft from vault — synthesise user's own notes into a draft on demand
-- Socratic mode — AI challenges claims using contradicting vault evidence
-- Voice capture — local Whisper → structured note, linked to existing notes
-- Cross-vault search — semantic search across all open vaults simultaneously (P1.5)
+- ⬜ Semantic search — nomic-embed + LanceDB
+- ⬜ AI-inferred connections — cosine similarity + named entities + temporal co-occurrence + shared tags; rendered as "suggested links", user accepts/dismisses
+- ⬜ Contradiction detection — LLM compares new note against similar older notes
+- ⬜ Knowledge decay — freshness score, spaced resurfacing with AI review prompt
+- ⬜ Daily synthesis — on open: unresolved threads, new connections, questions
+- ⬜ Draft from vault — synthesise user's own notes into a draft on demand
+- ⬜ Socratic mode — AI challenges claims using contradicting vault evidence
+- ⬜ Voice capture — local Whisper → structured note, linked to existing notes
+- ⬜ Cross-vault search — semantic search across all open vaults simultaneously (P1.5)
 
 ### P2 — Sync & Capture
 
-- BYOS sync — encrypt vault, write CRDT patches to user-provided storage
-- Managed sync (premium) — Cloudflare Workers WebSocket relay, E2E encrypted
-- Conflict resolution UI — for the rare Automerge conflicts
-- Telegram capture bridge (premium) — user links Telegram account via one-time
+- ⬜ BYOS sync — encrypt vault, write CRDT patches to user-provided storage
+- ⬜ Managed sync (premium) — Cloudflare Workers WebSocket relay, E2E encrypted
+- ⬜ Conflict resolution UI — for the rare Automerge conflicts
+- ⬜ Telegram capture bridge (premium) — user links Telegram account via one-time
   code sent to `@m3mBot`; incoming text / voice / images queued in R2 as
   encrypted payloads; drained by desktop on next sync connection; voice runs
   through local Whisper pipeline on desktop; same E2E encryption as vault sync
-- Sync is per-vault — each vault has independent sync config and passphrase
+- ⬜ Sync is per-vault — each vault has independent sync config and passphrase
 
 ### P3 — Power
 
-- Smart paste — URL / PDF / screenshot → AI distils signal, links to vault
-- Knowledge gap detector — surfaces assumed-but-unwritten topics while editing
-- Temporal graph — timeline scrub of knowledge graph evolution
-- BYOM — swap AI backend per-feature (Ollama / Claude API / OpenAI API)
-- Cross-vault AI connections — AI surfaces links between notes across vaults
+- ⬜ Smart paste — URL / PDF / screenshot → AI distils signal, links to vault
+- ⬜ Knowledge gap detector — surfaces assumed-but-unwritten topics while editing
+- ⬜ Temporal graph — timeline scrub of knowledge graph evolution
+- ⬜ BYOM — swap AI backend per-feature (Ollama / Claude API / OpenAI API)
+- ⬜ Cross-vault AI connections — AI surfaces links between notes across vaults
 
 ## Vault Manager
 
@@ -246,6 +246,37 @@ App detects VRAM on first launch and recommends models accordingly.
 
 **Per-vault sync:** each vault is synced independently. A user can sync their Work vault via managed premium and their Personal vault via BYOS, or not sync a vault at all. Sync config lives in `.vault/settings.json`.
 
+## Release & Versioning
+
+**Versioning:** semantic versioning (`MAJOR.MINOR.PATCH`). Managed via `release-plz` — bumps `Cargo.toml`, updates `CHANGELOG.md`, tags, and pushes in one command.
+
+**Update mechanism:** `tauri-plugin-updater` (built into Tauri v2). Checks a versioned JSON manifest on launch. Updates are cryptographically signed — Tauri keypair generated once, private key stored in GitHub secrets.
+
+**Distribution phases:**
+
+| Phase | Mechanism | Infrastructure |
+|---|---|---|
+| Early / free | GitHub Releases + Tauri updater | GitHub Actions builds all platforms on tag push |
+| Premium live | Cloudflare R2 manifest + Worker | Reuses sync infra; enables update channels |
+
+**Update channels:**
+
+| Channel | Audience |
+|---|---|
+| `stable` | All users |
+| `beta` | Opt-in (Settings → Beta updates) |
+| `nightly` | Internal / dev only |
+
+Channel is a URL in `tauri.conf.json` — switching is a settings toggle.
+
+**GitHub Actions release workflow:** `.github/workflows/release.yml` triggers on `v*` tag push. Builds macOS (arm64 + x64 universal), Windows, and Linux in parallel via matrix strategy. Signs artifacts with `TAURI_SIGNING_PRIVATE_KEY` secret. Uploads to GitHub Releases as a draft for manual review before publishing.
+
+**Release command:**
+```bash
+# Cut a release (bumps version, tags, pushes)
+release-plz release
+```
+
 ## Non-goals (v1)
 
 - Multiplayer / real-time collaboration
@@ -267,10 +298,10 @@ App detects VRAM on first launch and recommends models accordingly.
 
 ## Open UX/UI Topics
 
-1. **Search** — does it makes sense to look for complete words or would it be better to look for contained words as well?
-2. **Empty State** — when the application starts, no vault is selected
-3. **Moving Panels** — main panels should be moveable and toggleable
-4. **Multi-Language** — implement multi-language support
+1. **Search** — full-word match only vs. substring/contains match
+2. **Empty state** — what to show when app starts with no active vault
+3. **Moving panels** — main panels should be moveable and toggleable
+4. **Multi-language** — i18n support scope and implementation
 
 ## Telegram Bridge Architecture
 
@@ -313,4 +344,6 @@ notify watcher → index → AI pipeline
 
 **Offline behaviour:** payloads queue in R2 until desktop app connects. No message is lost. Queue TTL: 30 days.
 
-**Production Build:** the Google Fonts @import requires internet. For production Tauri builds that must stay fully offline, the fonts should be bundled with @font-face pointing at local files and the @import removed
+## Build Notes
+
+- Google Fonts `@import` requires internet. For fully offline production Tauri builds, bundle fonts via `@font-face` pointing at local files and remove the `@import`.
