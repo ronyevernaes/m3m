@@ -2,6 +2,8 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { Link } from '@tiptap/extension-link';
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
+import { TaskList } from '@tiptap/extension-task-list';
+import { TaskItem } from '@tiptap/extension-task-item';
 import { createLowlight, all } from 'lowlight';
 import { useEffect, useRef, useCallback } from 'react';
 import { useVault } from '../../hooks/useVault';
@@ -28,6 +30,8 @@ export function Editor({ className }: EditorProps) {
         HTMLAttributes: { rel: 'noopener noreferrer', target: null },
       }),
       CodeBlockLowlight.configure({ lowlight }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
     ],
     content: '',
     editorProps: {

@@ -72,6 +72,11 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
       isActive: () => editor.isActive('codeBlock'),
     },
     {
+      label: '☐ List',
+      onClick: () => editor.chain().focus().toggleTaskList().run(),
+      isActive: () => editor.isActive('taskList'),
+    },
+    {
       label: 'Link',
       onClick: () => {
         const href = window.prompt('URL');

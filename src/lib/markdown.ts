@@ -1,5 +1,6 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
 import type { JSONContent } from '@tiptap/core';
 import type {
@@ -87,6 +88,24 @@ function mdastNodeToTipTap(node: Content): JSONContent | JSONContent[] | null {
     }
     case 'list': {
       const l = node as List;
+      const isTaskList = !l.ordered && l.children.some((item) => (item as ListItem).checked !== null && (item as ListItem).checked !== undefined);
+      if (isTaskList) {
+        return {
+          type: 'taskList',
+          content: l.children.map((item) => {
+            const li = item as ListItem;
+            return {
+              type: 'taskItem',
+              attrs: { checked: li.checked === true },
+              content: li.children.flatMap((child) => {
+                const converted = mdastNodeToTipTap(child as Content);
+                if (!converted) return [];
+                return Array.isArray(converted) ? converted : [converted];
+              }),
+            };
+          }),
+        };
+      }
       const listType = l.ordered ? 'orderedList' : 'bulletList';
       return {
         type: listType,
@@ -112,7 +131,7 @@ function mdastNodeToTipTap(node: Content): JSONContent | JSONContent[] | null {
 }
 
 export function markdownToTipTap(md: string): JSONContent {
-  const tree = unified().use(remarkParse).parse(md) as Root;
+  const tree = unified().use(remarkParse).use(remarkGfm).parse(md) as Root;
   const content: JSONContent[] = [];
   for (const node of tree.children) {
     const converted = mdastNodeToTipTap(node as Content);
@@ -216,6 +235,21 @@ function tiptapNodeToMdast(node: JSONContent): Content | null {
           }),
         })) as ListItem[],
       } as List;
+    case 'taskList':
+      return {
+        type: 'list',
+        ordered: false,
+        spread: false,
+        children: children.map((item) => ({
+          type: 'listItem',
+          checked: item.attrs?.checked === true,
+          spread: false,
+          children: (item.content ?? []).flatMap((c) => {
+            const converted = tiptapNodeToMdast(c);
+            return converted ? [converted] : [];
+          }),
+        })) as ListItem[],
+      } as List;
     case 'horizontalRule':
       return { type: 'thematicBreak' } as ThematicBreak;
     default:
@@ -229,5 +263,5 @@ export function tipTapToMarkdown(json: JSONContent): string {
     return converted ? [converted] : [];
   });
   const root: Root = { type: 'root', children: nodes };
-  return unified().use(remarkStringify).stringify(root);
+  return unified().use(remarkStringify).use(remarkGfm).stringify(root);
 }
