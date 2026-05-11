@@ -27,6 +27,7 @@ interface VaultState {
   setActiveVaultId: (id: string | null) => void;
   upsertVault: (entry: VaultEntry) => void;
   removeVaultById: (id: string) => void;
+  removeNoteByPath: (path: string) => void;
   setRegistryLoading: (loading: boolean) => void;
 }
 
@@ -74,5 +75,7 @@ export const useVaultStore = create<VaultState>((set) => ({
     }),
   removeVaultById: (id) =>
     set((state) => ({ vaults: state.vaults.filter((v) => v.id !== id) })),
+  removeNoteByPath: (path) =>
+    set((state) => ({ notes: state.notes.filter((n) => n.path !== path) })),
   setRegistryLoading: (loading) => set({ registryLoading: loading }),
 }));

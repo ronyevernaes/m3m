@@ -27,6 +27,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
 | Backlink panel | Derived at index time from frontmatter + inline wikilinks |
 | Tag sidebar | Auto-derived from YAML frontmatter |
+| Delete a note | Permanent file deletion with confirmation; hover trash icon in note list |
 | Daily note | `YYYY-MM-DD.md`, auto-linked to the previous day |
 | Graph view | React Flow — nodes are notes, edges are links |
 | Vault Manager | Create, open, switch, rename, remove vaults |

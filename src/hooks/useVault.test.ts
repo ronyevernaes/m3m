@@ -58,6 +58,52 @@ describe('useVault', () => {
     expect(mockInvoke).toHaveBeenCalledWith('list_notes', { vaultPath: '/vault' });
   });
 
+  it('deleteNote calls invoke delete_note and removes note from store', async () => {
+    useVaultStore.setState({
+      notes: [
+        { id: 'abc', title: 'Note A', path: '/vault/note-a.md', modified: '', tags: [] },
+        { id: 'def', title: 'Note B', path: '/vault/note-b.md', modified: '', tags: [] },
+      ],
+      currentNote: null,
+    });
+    mockInvoke.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useVault());
+    await act(async () => {
+      await result.current.deleteNote('/vault/note-a.md');
+    });
+
+    expect(mockInvoke).toHaveBeenCalledWith('delete_note', { path: '/vault/note-a.md' });
+    expect(useVaultStore.getState().notes).toHaveLength(1);
+    expect(useVaultStore.getState().notes[0].path).toBe('/vault/note-b.md');
+  });
+
+  it('deleteNote clears currentNote when the deleted note is open', async () => {
+    useVaultStore.setState({
+      notes: [{ id: 'abc', title: 'Note A', path: '/vault/note-a.md', modified: '', tags: [] }],
+      currentNote: {
+        path: '/vault/note-a.md',
+        frontmatter: {
+          id: 'abc',
+          title: 'Note A',
+          created: '',
+          modified: '',
+          tags: [],
+          links: [],
+        },
+        body: '',
+      },
+    });
+    mockInvoke.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useVault());
+    await act(async () => {
+      await result.current.deleteNote('/vault/note-a.md');
+    });
+
+    expect(useVaultStore.getState().currentNote).toBeNull();
+  });
+
   it('saveCurrentNote calls invoke write_note with serialized content', async () => {
     useVaultStore.setState({
       currentNote: {

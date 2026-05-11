@@ -17,6 +17,9 @@ export const createNote = (vaultPath: string, title: string) =>
 export const renameNote = (oldPath: string, newPath: string) =>
   invoke<void>('rename_note', { oldPath, newPath });
 
+export const deleteNote = (path: string) =>
+  invoke<void>('delete_note', { path });
+
 export const openVault = (vaultPath: string) =>
   invoke<number>('open_vault', { vaultPath });
 

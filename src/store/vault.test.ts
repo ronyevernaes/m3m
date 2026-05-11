@@ -55,6 +55,19 @@ describe('vault store', () => {
     expect(useVaultStore.getState().isDirty).toBe(false);
   });
 
+  it('removeNoteByPath removes the matching note', () => {
+    useVaultStore.setState({
+      notes: [
+        { id: 'a', title: 'A', path: '/vault/a.md', modified: '', tags: [] },
+        { id: 'b', title: 'B', path: '/vault/b.md', modified: '', tags: [] },
+      ],
+    });
+    useVaultStore.getState().removeNoteByPath('/vault/a.md');
+    const { notes } = useVaultStore.getState();
+    expect(notes).toHaveLength(1);
+    expect(notes[0].path).toBe('/vault/b.md');
+  });
+
   it('setError stores error message', () => {
     useVaultStore.getState().setError('something went wrong');
     expect(useVaultStore.getState().error).toBe('something went wrong');

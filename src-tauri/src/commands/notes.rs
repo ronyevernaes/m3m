@@ -92,6 +92,11 @@ pub async fn rename_note(old_path: String, new_path: String) -> Result<(), Strin
     fs::rename(&old_path, &new_path).map_err(|e| e.to_string())
 }
 
+#[command]
+pub async fn delete_note(path: String) -> Result<(), String> {
+    fs::remove_file(&path).map_err(|e| e.to_string())
+}
+
 fn resolve_unique_path(path: PathBuf) -> PathBuf {
     if !path.exists() {
         return path;

@@ -69,6 +69,8 @@ src/
 
 **Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation. `links[]` are explicit outlinks only — body wikilink extraction is not implemented yet.
 
+**Note deletion** — `delete_note` command removes the file on disk via `std::fs::remove_file`. The file watcher detects the Remove event and calls `indexer::remove_file()` to clean the notes table, FTS index, and outbound `note_links` from SQLite automatically. Frontend optimistically removes the note from the store and clears `currentNote` if it was open.
+
 ## Prompt conventions
 
 When starting work on a specific area, include the relevant section from `SPEC.md`:

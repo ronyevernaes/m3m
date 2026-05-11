@@ -148,6 +148,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Full-text search — SQLite FTS5 with snippets
 - ✅ Backlink panel — derived from `note_links` table, live-updated on watcher events
 - ✅ Tag sidebar — derived from frontmatter `tags`, per-tag note filtering
+- ✅ Delete a note — permanent file deletion with confirmation dialog; watcher cleans SQLite automatically
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
 - ⬜ Graph view — React Flow, nodes = notes, edges = links
 - ⬜ Settings UI — vault path, theme, AI backend (local / cloud / off)

@@ -50,6 +50,7 @@ pub fn run() {
             commands::notes::write_note,
             commands::notes::create_note,
             commands::notes::rename_note,
+            commands::notes::delete_note,
             commands::vault::open_vault,
             commands::vault::list_vaults,
             commands::vault::create_vault,

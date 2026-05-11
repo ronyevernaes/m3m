@@ -4,6 +4,7 @@ import { useVaultRegistry } from './hooks/useVaultRegistry';
 import { useSearch } from './hooks/useSearch';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
+import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
 import { TagList } from './components/sidebar/TagList';
 import { WelcomeScreen } from './components/vault/WelcomeScreen';
@@ -11,11 +12,12 @@ import { VaultSwitcher } from './components/vault/VaultSwitcher';
 import { NewVaultDialog } from './components/vault/NewVaultDialog';
 import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
+import { NoteListItem } from './components/note/NoteListItem';
 import { useUiStore } from './store/ui';
-import { cn } from './lib/cn';
+import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
-  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, error } = useVault();
+  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, deleteNote, error } = useVault();
   const {
     vaults,
     activeVaultId,
@@ -31,6 +33,7 @@ export default function App() {
   const { selectedTag, setSelectedTag } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<NoteListItemType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
 
@@ -114,21 +117,13 @@ export default function App() {
         ) : (
           <ul className="flex-1 min-h-0 overflow-y-auto py-2">
             {displayedNotes.map((note) => (
-              <li key={note.id || note.path}>
-                <Button
-                  intent="ghost"
-                  size="sm"
-                  onClick={() => openNote(note.path)}
-                  className={cn(
-                    'w-full justify-start rounded-none font-normal truncate',
-                    currentNote?.path === note.path
-                      ? 'bg-accent-subtle text-accent hover:bg-accent-subtle hover:text-accent'
-                      : 'text-foreground hover:bg-muted hover:text-foreground',
-                  )}
-                >
-                  {note.title || 'Untitled'}
-                </Button>
-              </li>
+              <NoteListItem
+                key={note.id || note.path}
+                note={note}
+                isActive={currentNote?.path === note.path}
+                onSelect={() => openNote(note.path)}
+                onDelete={() => setNoteToDelete(note)}
+              />
             ))}
           </ul>
         )}
@@ -151,6 +146,18 @@ export default function App() {
           onCancel={() => setShowNewVaultDialog(false)}
         />
       )}
+
+      <ConfirmDialog
+        open={noteToDelete !== null}
+        title="Delete note"
+        message={`Delete "${noteToDelete?.title || 'Untitled'}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={async () => {
+          if (noteToDelete) await deleteNote(noteToDelete.path);
+          setNoteToDelete(null);
+        }}
+        onCancel={() => setNoteToDelete(null)}
+      />
     </div>
   );
 }
