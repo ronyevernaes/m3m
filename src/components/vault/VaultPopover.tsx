@@ -3,6 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Button } from '../ui/Button';
 import { DotsIcon } from '../icons/DotsIcon';
 import { CheckIcon } from '../icons/CheckIcon';
+import { XIcon } from '../icons/XIcon';
 import { cn } from '../../lib/cn';
 import type { VaultEntry } from '../../types/vault';
 
@@ -28,6 +29,7 @@ export function VaultPopover({
   onCreateNew,
 }: VaultPopoverProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -73,13 +75,29 @@ export function VaultPopover({
       className="absolute top-full left-0 mt-1 w-72 rounded-lg border border-border bg-background shadow-lg z-50 overflow-hidden"
     >
       <div className="px-3 pt-3 pb-2">
-        <input
-          autoFocus
-          className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-muted text-heading placeholder:text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500"
-          placeholder="search vaults..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="relative">
+          <input
+            ref={searchRef}
+            autoFocus
+            className={cn(
+              'w-full px-3 py-1.5 text-sm rounded-md border border-border bg-muted text-heading placeholder:text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500',
+              query && 'pr-8',
+            )}
+            placeholder="search vaults..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => { setQuery(''); searchRef.current?.focus(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-neutral-400 hover:text-heading"
+              aria-label="Clear search"
+            >
+              <XIcon />
+            </button>
+          )}
+        </div>
       </div>
 
       <ul className="py-1">
