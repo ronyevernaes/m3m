@@ -21,6 +21,7 @@ interface EditorProps {
 export function Editor({ className }: EditorProps) {
   const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, isDirty, error } = useVault();
   const suppressUpdate = useRef(false);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -48,10 +49,24 @@ export function Editor({ className }: EditorProps) {
       if (suppressUpdate.current) return;
       const markdown = tipTapToMarkdown(editor.getJSON());
       updateCurrentNoteBody(markdown);
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = setTimeout(() => {
+        handleSaveRef.current();
+      }, 2000);
     };
     editor.on('update', handleUpdate);
-    return () => { editor.off('update', handleUpdate); };
+    return () => {
+      editor.off('update', handleUpdate);
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
   }, [editor, updateCurrentNoteBody]);
+
+  // Cancel any pending auto-save when switching to a different note.
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [currentNote?.path]);
 
   // Load note content into editor when the open note changes.
   useEffect(() => {
@@ -74,6 +89,9 @@ export function Editor({ className }: EditorProps) {
     const markdown = tipTapToMarkdown(editor.getJSON());
     await saveCurrentNote(markdown);
   }, [editor, saveCurrentNote]);
+
+  const handleSaveRef = useRef(handleSave);
+  useEffect(() => { handleSaveRef.current = handleSave; }, [handleSave]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {

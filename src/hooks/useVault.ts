@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { useVaultStore } from '../store/vault';
 import { listNotes, readNote, writeNote, renameNote, openVault, deleteNote as deleteNoteIpc } from '../lib/ipc';
@@ -21,20 +21,6 @@ export function useVault() {
       store.setLoading(false);
     }
   }, [store.vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const openNote = useCallback(async (path: string) => {
-    store.setLoading(true);
-    store.setError(null);
-    try {
-      const raw = await readNote(path);
-      const note = parseNote(raw.content, raw.path);
-      store.setCurrentNote(note);
-    } catch (err) {
-      store.setError(String(err));
-    } finally {
-      store.setLoading(false);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveCurrentNote = useCallback(async (bodyOverride?: string) => {
     const { currentNote, vaultPath, setLoading, setError, setCurrentNote } = useVaultStore.getState();
@@ -70,6 +56,28 @@ export function useVault() {
       setLoading(false);
     }
   }, [loadNotes]);
+
+  const saveCurrentNoteRef = useRef(saveCurrentNote);
+  useEffect(() => { saveCurrentNoteRef.current = saveCurrentNote; }, [saveCurrentNote]);
+
+  const openNote = useCallback(async (path: string) => {
+    const { currentNote, isDirty, setLoading, setError, setCurrentNote } = useVaultStore.getState();
+    if (currentNote?.path === path) return;
+    if (isDirty && currentNote) {
+      await saveCurrentNoteRef.current();
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const raw = await readNote(path);
+      const note = parseNote(raw.content, raw.path);
+      setCurrentNote(note);
+    } catch (err) {
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const newNote = useCallback(
     async (title = 'Untitled') => {

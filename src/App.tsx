@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useVault } from './hooks/useVault';
 import { useVaultRegistry } from './hooks/useVaultRegistry';
 import { useSearch } from './hooks/useSearch';
@@ -14,10 +14,11 @@ import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
 import { NoteListItem } from './components/note/NoteListItem';
 import { useUiStore } from './store/ui';
+import { useVaultStore } from './store/vault';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
-  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, deleteNote, error } = useVault();
+  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, deleteNote, saveCurrentNote, error } = useVault();
   const {
     vaults,
     activeVaultId,
@@ -49,6 +50,30 @@ export default function App() {
     const timer = setTimeout(() => search(searchQuery), 200);
     return () => clearTimeout(timer);
   }, [searchQuery, search, clearSearch]);
+
+  const saveCurrentNoteRef = useRef(saveCurrentNote);
+  useEffect(() => { saveCurrentNoteRef.current = saveCurrentNote; }, [saveCurrentNote]);
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    const setup = async () => {
+      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const appWindow = getCurrentWindow();
+      unlisten = await appWindow.onCloseRequested(async (event) => {
+        event.preventDefault();
+        try {
+          const { isDirty, currentNote: note } = useVaultStore.getState();
+          if (isDirty && note) {
+            await saveCurrentNoteRef.current();
+          }
+        } finally {
+          appWindow.destroy();
+        }
+      });
+    };
+    setup();
+    return () => { unlisten?.(); };
+  }, []);
 
   // Load registry on mount — restores last active vault automatically.
   useEffect(() => {
