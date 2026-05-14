@@ -1,5 +1,4 @@
 [workspace]
-manifest_path = "src-tauri/Cargo.toml"
 
 [[package]]
 name = "m3m"
