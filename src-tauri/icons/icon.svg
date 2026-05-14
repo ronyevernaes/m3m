@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#2e0f5c"/>
+      <stop offset="100%" stop-color="#090112"/>
+    </radialGradient>
+    <linearGradient id="letter" x1="0" y1="270" x2="0" y2="755" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e879f9"/>
+      <stop offset="55%" stop-color="#c026d3"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="letterGlow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Subtle top-left ambient highlight -->
+  <rect width="1024" height="1024" rx="224" fill="url(#shine)"/>
+
+  <!-- Letter "m" with soft glow -->
+  <g filter="url(#letterGlow)">
+    <!-- Left arch ring -->
+    <path d="M 142 475 A 205 205 0 0 1 552 475 L 472 475 A 125 125 0 0 0 222 475 Z" fill="url(#letter)"/>
+    <!-- Right arch ring -->
+    <path d="M 472 475 A 205 205 0 0 1 882 475 L 802 475 A 125 125 0 0 0 552 475 Z" fill="url(#letter)"/>
+    <!-- Left leg (rounded bottom) -->
+    <path d="M 142 475 L 222 475 L 222 715 Q 222 755 182 755 Q 142 755 142 715 Z" fill="url(#letter)"/>
+    <!-- Center leg (rounded bottom) -->
+    <path d="M 472 475 L 552 475 L 552 715 Q 552 755 512 755 Q 472 755 472 715 Z" fill="url(#letter)"/>
+    <!-- Right leg (rounded bottom) -->
+    <path d="M 802 475 L 882 475 L 882 715 Q 882 755 842 755 Q 802 755 802 715 Z" fill="url(#letter)"/>
+  </g>
+
+  <!-- Arch peak nodes (subtle highlight dots at the top of each arch) -->
+  <circle cx="347" cy="310" r="18" fill="white" opacity="0.55"/>
+  <circle cx="677" cy="310" r="18" fill="white" opacity="0.55"/>
+</svg>
