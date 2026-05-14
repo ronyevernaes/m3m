@@ -191,6 +191,12 @@ src-tauri/src/
 
 ---
 
+## Releasing
+
+See [RELEASE.md](RELEASE.md) for the full release process.
+
+---
+
 ## License
 
 TBD
