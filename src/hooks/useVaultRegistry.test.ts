@@ -75,7 +75,7 @@ describe('useVaultRegistry', () => {
       .mockResolvedValueOnce(ENTRY_A);          // register_vault
 
     const { result } = renderHook(() => useVaultRegistry());
-    let entry: VaultEntry | null = null;
+    let entry: VaultEntry | null | undefined;
     await act(async () => {
       entry = await result.current.openExistingVault();
     });
