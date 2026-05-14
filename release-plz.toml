@@ -1,4 +1,5 @@
 [workspace]
+publish = false
 
 [[package]]
 name = "m3m"
