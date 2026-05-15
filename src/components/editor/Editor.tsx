@@ -70,14 +70,12 @@ export function Editor({ className }: EditorProps) {
 
   // Load note content into editor when the open note changes.
   useEffect(() => {
-    console.log('[Editor] currentNote?.path changed:', currentNote?.path);
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
     suppressUpdate.current = true;
     try {
       editor.commands.setContent(currentNote ? markdownToTipTap(currentNote.body) : '');
     } catch (err) {
       console.error('[Editor] setContent failed:', err);
-      editor.commands.setContent('');
     } finally {
       suppressUpdate.current = false;
     }
@@ -85,7 +83,7 @@ export function Editor({ className }: EditorProps) {
 
   // Read directly from the editor at save time — don't rely on store body being current.
   const handleSave = useCallback(async () => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
     const markdown = tipTapToMarkdown(editor.getJSON());
     await saveCurrentNote(markdown);
   }, [editor, saveCurrentNote]);
