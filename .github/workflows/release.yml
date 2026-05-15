@@ -61,6 +61,9 @@ jobs:
       - name: Install frontend dependencies
         run: bun install
 
+      - name: Add Cargo to PATH
+        run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
         env:
