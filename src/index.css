@@ -231,6 +231,22 @@ code {
   background: var(--code-bg);
 }
 
+.ProseMirror pre {
+  background: var(--code-bg) !important;
+  color: var(--text-h) !important;
+  border-radius: 6px;
+  padding: 0.85em 1.1em;
+}
+
+.ProseMirror pre code {
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0;
+  display: block;
+  border-radius: 0;
+  font-size: inherit;
+}
+
 /* TipTap task list */
 .ProseMirror ul[data-type="taskList"] {
   list-style: none !important;
