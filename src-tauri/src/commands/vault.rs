@@ -38,8 +38,13 @@ pub async fn open_vault(
 
     let pool = indexer::open_db(&root).await.map_err(|e| e.to_string())?;
     let count = indexer::index_vault(&pool, &root).await.map_err(|e| e.to_string())?;
-    let watcher = start_watcher(root.clone(), pool.clone(), app_handle.clone())
-        .map_err(|e| e.to_string())?;
+    let watcher = match start_watcher(root.clone(), pool.clone(), app_handle.clone()) {
+        Ok(w) => Some(w),
+        Err(e) => {
+            log::warn!("File watcher disabled for {}: {e}. Grant m3m access in System Settings → Privacy & Security → Files and Folders.", root.display());
+            None
+        }
+    };
 
     let ctx = VaultContext { vault_root: root, db: pool, _watcher: watcher };
     *state.vault.lock().unwrap() = Some(ctx);

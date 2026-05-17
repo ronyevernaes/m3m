@@ -16,8 +16,8 @@ use tauri::Manager;
 pub struct VaultContext {
     pub vault_root: PathBuf,
     pub db: SqlitePool,
-    /// Dropping this stops the notify watcher (RAII).
-    pub _watcher: RecommendedWatcher,
+    /// Dropping this stops the notify watcher (RAII). None when watching failed (e.g. TCC denied).
+    pub _watcher: Option<RecommendedWatcher>,
 }
 
 pub struct AppState {
