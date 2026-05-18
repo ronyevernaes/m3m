@@ -11,15 +11,17 @@ import { useVaultSettingsStore } from '../../store/vaultSettings';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
 import { EditorToolbar } from './EditorToolbar';
 import { Button } from '../ui/Button';
+import { GearIcon } from '../icons/GearIcon';
 import { cn } from '../../lib/cn';
 
 const lowlight = createLowlight(all);
 
 interface EditorProps {
   className?: string;
+  onSettingsClick?: () => void;
 }
 
-export function Editor({ className }: EditorProps) {
+export function Editor({ className, onSettingsClick }: EditorProps) {
   const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, isDirty, error } = useVault();
   const suppressUpdate = useRef(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -121,43 +123,60 @@ export function Editor({ className }: EditorProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!currentNote) {
-    return (
-      <div className="flex items-center justify-center h-full text-foreground">
-        Select or create a note to start editing.
-      </div>
-    );
-  }
-
   return (
     <div className={cn('flex flex-col h-full', className)}>
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
-        <input
-          type="text"
-          value={currentNote.frontmatter.title}
-          onChange={(e) => updateCurrentNoteTitle(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-          className="text-lg font-medium text-heading bg-transparent border-none outline-none w-full min-w-0 focus:outline-none placeholder:text-foreground/40"
-          placeholder="Untitled"
-        />
+        {currentNote ? (
+          <input
+            type="text"
+            value={currentNote.frontmatter.title}
+            onChange={(e) => updateCurrentNoteTitle(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+            className="text-lg font-medium text-heading bg-transparent border-none outline-none w-full min-w-0 focus:outline-none placeholder:text-foreground/40"
+            placeholder="Untitled"
+          />
+        ) : (
+          <span className="flex-1" />
+        )}
         <div className="flex items-center gap-2">
-          {error && (
-            <span className="text-xs text-error-500 max-w-xs truncate" title={error}>
-              Error: {error}
-            </span>
+          {currentNote && (
+            <>
+              {error && (
+                <span className="text-xs text-error-500 max-w-xs truncate" title={error}>
+                  Error: {error}
+                </span>
+              )}
+              {isDirty && !error && (
+                <span className="text-xs text-foreground">Unsaved changes</span>
+              )}
+              {showSaved && !isDirty && !error && (
+                <span className="text-xs text-foreground">Saved</span>
+              )}
+              <Button intent="primary" size="sm" onClick={handleSave}>
+                Save
+              </Button>
+            </>
           )}
-          {isDirty && !error && (
-            <span className="text-xs text-foreground">Unsaved changes</span>
+          {onSettingsClick && (
+            <button
+              type="button"
+              onClick={onSettingsClick}
+              aria-label="Open settings"
+              title="Settings (⌘,)"
+              className="p-1.5 rounded-md text-foreground hover:text-heading hover:bg-muted transition-colors"
+            >
+              <GearIcon />
+            </button>
           )}
-          {showSaved && !isDirty && !error && (
-            <span className="text-xs text-foreground">Saved</span>
-          )}
-          <Button intent="primary" size="sm" onClick={handleSave}>
-            Save
-          </Button>
         </div>
       </div>
+
+      {!currentNote && (
+        <div className="flex flex-1 items-center justify-center text-foreground">
+          Select or create a note to start editing.
+        </div>
+      )}
 
       {editor && <EditorToolbar editor={editor} />}
 
