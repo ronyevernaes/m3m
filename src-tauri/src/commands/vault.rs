@@ -12,6 +12,7 @@ use crate::registry::{self, VaultEntry, registry_path, now_iso8601};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VaultList {
     pub vaults: Vec<VaultEntry>,
     pub last_active_vault: Option<String>,

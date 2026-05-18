@@ -4,17 +4,21 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VaultEntry {
     pub id: String,
     pub name: String,
     pub path: String,
+    #[serde(alias = "last_opened")]
     pub last_opened: String,
     pub color: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Registry {
     pub vaults: Vec<VaultEntry>,
+    #[serde(default, alias = "last_active_vault")]
     pub last_active_vault: Option<String>,
 }
 
