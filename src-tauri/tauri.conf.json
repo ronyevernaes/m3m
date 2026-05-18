@@ -1,7 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "m3m",
-  "version": "0.1.0",
   "identifier": "com.ronyevernaes.m3m",
   "build": {
     "frontendDist": "../dist",

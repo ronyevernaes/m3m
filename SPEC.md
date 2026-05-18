@@ -195,6 +195,12 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Temporal graph — timeline scrub of knowledge graph evolution
 - ⬜ BYOM — swap AI backend per-feature (Ollama / Claude API / OpenAI API)
 - ⬜ Cross-vault AI connections — AI surfaces links between notes across vaults
+- ⬜ Outline panel
+- ⬜ Collapse sections in a document
+- ⬜ Actions in blocks of content (copy code in one click)
+- ⬜ Modes: Edit, Preview, Source Code
+- ⬜ Notes linking
+- ⬜ Notes properties / metadata
 
 ## Vault Manager
 
