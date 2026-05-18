@@ -22,7 +22,7 @@ export function useBacklinks(noteId: string | null) {
   }, []);
 
   useEffect(() => {
-    if (!noteId) { setBacklinks([]); return; }
+    if (!noteId) return;
     fetch(noteId);
   }, [noteId, fetch]);
 
@@ -32,5 +32,5 @@ export function useBacklinks(noteId: string | null) {
     return () => { unlisten.then((fn) => fn()); };
   }, [noteId, fetch]);
 
-  return { backlinks, isLoading, error };
+  return { backlinks: noteId ? backlinks : [], isLoading, error };
 }

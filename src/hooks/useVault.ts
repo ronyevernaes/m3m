@@ -77,7 +77,7 @@ export function useVault() {
     } finally {
       setLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const newNote = useCallback(
     async (title = 'Untitled') => {
@@ -136,7 +136,7 @@ export function useVault() {
     } catch (err) {
       setError(String(err));
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const initVault = useCallback(async (path: string) => {
     store.setVaultPath(path);
@@ -155,7 +155,7 @@ export function useVault() {
       loadNotes();
     });
     return unlisten;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     vaultPath: store.vaultPath,

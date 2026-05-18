@@ -106,7 +106,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
   }, [editor, saveCurrentNote]);
 
   const handleSaveRef = useRef(handleSave);
-  useEffect(() => { handleSaveRef.current = handleSave; }, [handleSave]);
+  handleSaveRef.current = handleSave;
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
