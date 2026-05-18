@@ -262,6 +262,10 @@ code {
   background: var(--code-bg);
 }
 
+.ProseMirror {
+  font-size: var(--editor-font-size);
+}
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
