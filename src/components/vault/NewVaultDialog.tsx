@@ -10,12 +10,13 @@ const PRESET_COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#
 interface NewVaultDialogProps {
   onConfirm: (name: string, path: string, color: string) => Promise<void>;
   onCancel: () => void;
+  defaultPath?: string | null;
 }
 
-export function NewVaultDialog({ onConfirm, onCancel }: NewVaultDialogProps) {
+export function NewVaultDialog({ onConfirm, onCancel, defaultPath }: NewVaultDialogProps) {
   const [name, setName] = useState('');
   const [color, setColor] = useState(PRESET_COLORS[0]);
-  const [path, setPath] = useState('');
+  const [path, setPath] = useState(defaultPath ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

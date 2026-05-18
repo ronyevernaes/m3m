@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { NoteListItem, SearchResult, BacklinkItem } from '../types/note';
 import type { VaultEntry, VaultList } from '../types/vault';
+import type { AppSettings } from '../types/settings';
 
 export const listNotes = (vaultPath: string) =>
   invoke<NoteListItem[]>('list_notes', { vaultPath });
@@ -52,3 +53,9 @@ export const revealVault = (path: string) =>
 
 export const pickFolder = () =>
   invoke<string | null>('pick_folder');
+
+export const getSettings = () =>
+  invoke<AppSettings>('get_settings');
+
+export const saveSettings = (settings: AppSettings) =>
+  invoke<void>('save_settings', { settings });

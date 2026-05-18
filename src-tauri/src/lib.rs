@@ -1,3 +1,4 @@
+mod app_settings;
 mod commands;
 pub mod frontmatter;
 pub mod indexer;
@@ -63,6 +64,8 @@ pub fn run() {
             commands::vault::pick_folder,
             commands::search::search_notes,
             commands::graph::get_backlinks,
+            commands::settings::get_settings,
+            commands::settings::save_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

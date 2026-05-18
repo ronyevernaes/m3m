@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Context;
 use sha2::{Digest, Sha256};
-use sqlx::{SqlitePool, sqlite::SqliteConnectOptions};
+use sqlx::{SqlitePool, sqlite::{SqliteConnectOptions, SqliteJournalMode}};
 
 use crate::frontmatter;
 use crate::models::note::{BacklinkItem, SearchResult};
@@ -12,19 +12,40 @@ use crate::models::note::{BacklinkItem, SearchResult};
 // Database bootstrap
 // ---------------------------------------------------------------------------
 
-pub async fn open_db(vault_root: &Path) -> anyhow::Result<SqlitePool> {
-    let vault_dir = vault_root.join(".vault");
-    fs::create_dir_all(&vault_dir)
-        .with_context(|| format!("create .vault dir at {}", vault_dir.display()))?;
+/// Opens (or creates) the SQLite pool at `db_path` and bootstraps the schema.
+/// Pass a path inside the app data directory so macOS TCC never blocks it.
+pub async fn open_db(db_path: &Path) -> anyhow::Result<SqlitePool> {
+    let pool = match try_open_pool(db_path).await {
+        Ok(pool) => pool,
+        Err(_) => {
+            // index.db is a rebuildable cache — delete it and start fresh
+            let _ = fs::remove_file(db_path);
+            let _ = fs::remove_file(db_path.with_extension("db-wal"));
+            let _ = fs::remove_file(db_path.with_extension("db-shm"));
+            try_open_pool(db_path).await?
+        }
+    };
 
-    let db_path = vault_dir.join("index.db");
-    let opts = SqliteConnectOptions::new()
-        .filename(&db_path)
-        .create_if_missing(true);
-
-    let pool = SqlitePool::connect_with(opts).await?;
     bootstrap_schema(&pool).await?;
     Ok(pool)
+}
+
+async fn try_open_pool(db_path: &Path) -> anyhow::Result<SqlitePool> {
+    // Pre-create the file with std::fs so SQLite only needs to open an
+    // existing file (no O_CREAT). On macOS, SQLite's VFS can fail to create
+    // files in certain locations (e.g. Documents) even when std::fs can write
+    // there, because the two use different open flag combinations.
+    if !db_path.exists() {
+        std::fs::File::create(db_path)
+            .with_context(|| format!("create database file at {}", db_path.display()))?;
+    }
+    let opts = SqliteConnectOptions::new()
+        .filename(db_path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal);
+    SqlitePool::connect_with(opts).await.with_context(|| {
+        format!("open sqlite pool at {}", db_path.display())
+    })
 }
 
 async fn bootstrap_schema(pool: &SqlitePool) -> anyhow::Result<()> {

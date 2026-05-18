@@ -58,13 +58,16 @@ describe('useVaultRegistry', () => {
 
   it('loadVaults auto-switches to lastActiveVault', async () => {
     const mockList: VaultList = { vaults: [ENTRY_A, ENTRY_B], lastActiveVault: 'BBB' };
-    mockInvoke.mockResolvedValueOnce(mockList);
+    mockInvoke
+      .mockResolvedValueOnce(mockList) // list_vaults
+      .mockResolvedValueOnce(2);       // open_vault
 
     const { result } = renderHook(() => useVaultRegistry());
     await act(async () => {
       await result.current.loadVaults();
     });
 
+    expect(mockInvoke).toHaveBeenCalledWith('open_vault', { vaultPath: '/personal' });
     expect(result.current.activeVaultId).toBe('BBB');
     expect(useVaultStore.getState().vaultPath).toBe('/personal');
   });
@@ -111,6 +114,20 @@ describe('useVaultRegistry', () => {
     expect(mockInvoke).toHaveBeenCalledWith('open_vault', { vaultPath: '/personal' });
     expect(result.current.activeVaultId).toBe('BBB');
     expect(useVaultStore.getState().vaultPath).toBe('/personal');
+  });
+
+  it('switchVault shows error and leaves state unchanged when open_vault fails', async () => {
+    useVaultStore.setState({ vaults: [ENTRY_A, ENTRY_B], activeVaultId: 'AAA', vaultPath: '/work' });
+    mockInvoke.mockRejectedValueOnce('unable to open database file'); // open_vault fails
+
+    const { result } = renderHook(() => useVaultRegistry());
+    await act(async () => {
+      await result.current.switchVault('BBB');
+    });
+
+    expect(useVaultStore.getState().error).toContain('Could not open vault');
+    expect(useVaultStore.getState().activeVaultId).toBe('AAA'); // unchanged
+    expect(useVaultStore.getState().vaultPath).toBe('/work');   // unchanged
   });
 
   it('renameVaultEntry updates name in store without changing path', async () => {

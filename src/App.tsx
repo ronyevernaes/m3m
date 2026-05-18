@@ -13,8 +13,12 @@ import { NewVaultDialog } from './components/vault/NewVaultDialog';
 import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
 import { NoteListItem } from './components/note/NoteListItem';
+import { SettingsDialog } from './components/settings/SettingsDialog';
+import { GearIcon } from './components/icons/GearIcon';
 import { useUiStore } from './store/ui';
 import { useVaultStore } from './store/vault';
+import { useSettingsStore } from './store/settings';
+import { FONT_SIZE_PX } from './types/settings';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
@@ -33,7 +37,9 @@ export default function App() {
   } = useVaultRegistry();
   const { selectedTag, setSelectedTag } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
+  const { settings, loadSettings } = useSettingsStore();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<NoteListItemType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
@@ -75,10 +81,37 @@ export default function App() {
     return () => { unlisten?.(); };
   }, []);
 
-  // Load registry on mount — restores last active vault automatically.
+  // Load settings first, then vaults so the restoreLastVault setting is available.
   useEffect(() => {
-    loadVaults();
+    loadSettings().then(() => {
+      const { settings: s } = useSettingsStore.getState();
+      loadVaults(s.restoreLastVault);
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('dark', 'light');
+    if (settings.theme !== 'system') root.classList.add(settings.theme);
+  }, [settings.theme]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--editor-font-size',
+      FONT_SIZE_PX[settings.editorFontSize],
+    );
+  }, [settings.editorFontSize]);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+        e.preventDefault();
+        setShowSettings((v) => !v);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // When vault path changes, reload notes.
   useEffect(() => {
@@ -154,6 +187,18 @@ export default function App() {
         )}
 
         <TagList notes={notes} />
+
+        <div className="px-3 py-2 border-t border-border flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            aria-label="Open settings"
+            title="Settings (⌘,)"
+            className="p-1.5 rounded-md text-foreground hover:text-heading hover:bg-muted transition-colors"
+          >
+            <GearIcon />
+          </button>
+        </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -169,6 +214,7 @@ export default function App() {
             setShowNewVaultDialog(false);
           }}
           onCancel={() => setShowNewVaultDialog(false)}
+          defaultPath={settings.defaultVaultLocation}
         />
       )}
 
@@ -183,6 +229,8 @@ export default function App() {
         }}
         onCancel={() => setNoteToDelete(null)}
       />
+
+      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

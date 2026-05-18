@@ -5,7 +5,8 @@ use crate::indexer;
 
 async fn pool_with_schema() -> (SqlitePool, TempDir) {
     let dir = TempDir::new().unwrap();
-    let pool = indexer::open_db(dir.path()).await.unwrap();
+    let db_path = dir.path().join("index.db");
+    let pool = indexer::open_db(&db_path).await.unwrap();
     (pool, dir)
 }
 
@@ -18,10 +19,11 @@ fn write_note(dir: &TempDir, name: &str, content: &str) -> std::path::PathBuf {
 #[tokio::test]
 async fn bootstrap_schema_is_idempotent() {
     let dir = TempDir::new().unwrap();
+    let db_path = dir.path().join("index.db");
     // Call open_db twice — second call must not error
-    let pool = indexer::open_db(dir.path()).await.unwrap();
+    let pool = indexer::open_db(&db_path).await.unwrap();
     drop(pool);
-    indexer::open_db(dir.path()).await.unwrap();
+    indexer::open_db(&db_path).await.unwrap();
 }
 
 #[tokio::test]
@@ -133,7 +135,8 @@ async fn index_vault_second_run_returns_same_count() {
 async fn index_vault_skips_vault_directory() {
     let (pool, dir) = pool_with_schema().await;
     write_note(&dir, "real.md", "---\nid: r\ntitle: Real\n---\n");
-    // open_db already created .vault/; write a fake .md inside it
+    // Create .vault/ and write a fake .md inside it — walker must skip it
+    fs::create_dir_all(dir.path().join(".vault")).unwrap();
     fs::write(dir.path().join(".vault").join("fake.md"), "should be skipped").unwrap();
 
     let count = indexer::index_vault(&pool, dir.path()).await.unwrap();

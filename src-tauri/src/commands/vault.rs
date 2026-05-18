@@ -32,12 +32,22 @@ pub async fn open_vault(
         return Err(format!("Not a directory: {vault_path}"));
     }
 
-    let vault_dir = root.join(".vault");
-    fs::create_dir_all(&vault_dir)
-        .map_err(|e| format!("Cannot create .vault dir: {e}"))?;
+    // Store the index in app data dir — avoids TCC / permission issues with
+    // user-selected folders (e.g. Documents on macOS).
+    let vault_hash = indexer::hash_content(&vault_path);
+    let app_data = app_handle.path().app_data_dir().map_err(|e| e.to_string())?;
+    let db_dir = app_data.join("m3m").join("vaults").join(&vault_hash[..16]);
+    fs::create_dir_all(&db_dir).map_err(|e| format!("Cannot create db dir: {e}"))?;
+    let db_path = db_dir.join("index.db");
 
-    let pool = indexer::open_db(&root).await.map_err(|e| e.to_string())?;
-    let count = indexer::index_vault(&pool, &root).await.map_err(|e| e.to_string())?;
+    let pool = indexer::open_db(&db_path).await.map_err(|e| format!("{:#}", e))?;
+    let count = match indexer::index_vault(&pool, &root).await {
+        Ok(n) => n,
+        Err(e) => {
+            log::warn!("Vault index incomplete for {}: {e:#}", root.display());
+            0
+        }
+    };
     let watcher = match start_watcher(root.clone(), pool.clone(), app_handle.clone()) {
         Ok(w) => Some(w),
         Err(e) => {

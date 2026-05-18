@@ -17,16 +17,21 @@ const PRESET_COLORS = ['#a855f7', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#
 export function useVaultRegistry() {
   const store = useVaultStore();
 
-  const loadVaults = useCallback(async () => {
+  const loadVaults = useCallback(async (restoreLastVault = true) => {
     store.setRegistryLoading(true);
     try {
       const { vaults, lastActiveVault } = await listVaults();
       store.setVaults(vaults);
-      if (lastActiveVault) {
+      if (restoreLastVault && lastActiveVault) {
         const entry = vaults.find((v) => v.id === lastActiveVault);
         if (entry) {
-          store.setVaultPath(entry.path);
-          store.setActiveVaultId(entry.id);
+          try {
+            await openVault(entry.path);
+            store.setVaultPath(entry.path);
+            store.setActiveVaultId(entry.id);
+          } catch (e) {
+            store.setError(`Could not restore vault "${entry.name}": ${String(e)}`);
+          }
         }
       }
     } finally {
@@ -57,9 +62,14 @@ export function useVaultRegistry() {
     const entry = useVaultStore.getState().vaults.find((v) => v.id === id);
     if (!entry) return;
     store.setCurrentNote(null);
-    store.setActiveVaultId(id);
-    store.setVaultPath(entry.path);
-    await openVault(entry.path);
+    store.setError(null);
+    try {
+      await openVault(entry.path);
+      store.setActiveVaultId(id);
+      store.setVaultPath(entry.path);
+    } catch (e) {
+      store.setError(`Could not open vault "${entry.name}": ${String(e)}`);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const renameVaultEntry = useCallback(async (id: string, name: string) => {
