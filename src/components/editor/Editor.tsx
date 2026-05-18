@@ -105,9 +105,6 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     await saveCurrentNote(markdown);
   }, [editor, saveCurrentNote]);
 
-  const handleSaveRef = useRef(handleSave);
-  handleSaveRef.current = handleSave;
-
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {

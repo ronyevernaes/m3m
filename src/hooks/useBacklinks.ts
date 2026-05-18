@@ -1,36 +1,32 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getBacklinks } from '../lib/ipc';
 import type { BacklinkItem } from '../types/note';
 
 export function useBacklinks(noteId: string | null) {
   const [backlinks, setBacklinks] = useState<BacklinkItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async (id: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      setBacklinks(await getBacklinks(id));
-    } catch (err) {
-      setError(String(err));
-      setBacklinks([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  useEffect(() => {
+    if (!noteId) return;
+    let cancelled = false;
+    getBacklinks(noteId).then(
+      (result) => { if (!cancelled) { setBacklinks(result); setError(null); } },
+      (err) => { if (!cancelled) { setError(String(err)); setBacklinks([]); } },
+    );
+    return () => { cancelled = true; };
+  }, [noteId]);
 
   useEffect(() => {
     if (!noteId) return;
-    fetch(noteId);
-  }, [noteId, fetch]);
-
-  useEffect(() => {
-    if (!noteId) return;
-    const unlisten = listen('vault:index-updated', () => fetch(noteId));
+    const unlisten = listen('vault:index-updated', () => {
+      getBacklinks(noteId).then(
+        (result) => { setBacklinks(result); setError(null); },
+        (err) => { setError(String(err)); setBacklinks([]); },
+      );
+    });
     return () => { unlisten.then((fn) => fn()); };
-  }, [noteId, fetch]);
+  }, [noteId]);
 
-  return { backlinks: noteId ? backlinks : [], isLoading, error };
+  return { backlinks: noteId ? backlinks : [], isLoading: false, error };
 }
