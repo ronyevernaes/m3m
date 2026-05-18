@@ -13,18 +13,18 @@
   /* ── Spacing (4 px base grid) ───────────────── */
   --spacing: 0.25rem; /* 1 unit = 4 px */
 
-  /* ── Brand — violet-purple ───────────────────── */
-  --color-brand-50:  oklch(0.97 0.015 293);
-  --color-brand-100: oklch(0.94 0.035 293);
-  --color-brand-200: oklch(0.88 0.07  293);
-  --color-brand-300: oklch(0.79 0.13  293);
-  --color-brand-400: oklch(0.68 0.20  293);
-  --color-brand-500: oklch(0.59 0.27  293); /* ≈ #aa3bff */
-  --color-brand-600: oklch(0.50 0.24  293);
-  --color-brand-700: oklch(0.42 0.20  293);
-  --color-brand-800: oklch(0.33 0.15  293);
-  --color-brand-900: oklch(0.25 0.10  293);
-  --color-brand-950: oklch(0.17 0.06  293);
+  /* ── Brand — fuchsia (matches app icon) ─────── */
+  --color-brand-50:  oklch(0.97 0.015 312);
+  --color-brand-100: oklch(0.94 0.035 312);
+  --color-brand-200: oklch(0.88 0.07  312);
+  --color-brand-300: oklch(0.79 0.13  312);
+  --color-brand-400: oklch(0.68 0.22  312);
+  --color-brand-500: oklch(0.59 0.29  312); /* ≈ #c026d3 fuchsia */
+  --color-brand-600: oklch(0.50 0.26  312);
+  --color-brand-700: oklch(0.42 0.21  312);
+  --color-brand-800: oklch(0.33 0.15  312);
+  --color-brand-900: oklch(0.25 0.10  312);
+  --color-brand-950: oklch(0.17 0.06  312);
 
   /* ── Neutral — cool slate with violet tint ───── */
   --color-neutral-50:  oklch(0.985 0.003 286);
@@ -86,8 +86,8 @@
   --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
   --shadow-lg: 0 10px 25px -5px oklch(0 0 0 / 0.15), 0 8px 10px -6px oklch(0 0 0 / 0.10);
   --shadow-glow:
-    0 0 0 1px oklch(0.59 0.27 293 / 0.20),
-    0 0 20px 0 oklch(0.59 0.27 293 / 0.25);
+    0 0 0 1px oklch(0.59 0.29 312 / 0.20),
+    0 0 20px 0 oklch(0.59 0.29 312 / 0.25);
 
   /* ── Semantic surface tokens (resolved via :root vars below) ── */
   --color-background:    var(--bg);
@@ -126,9 +126,9 @@
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
+  --accent: #c026d3;
+  --accent-bg: rgba(192, 38, 211, 0.1);
+  --accent-border: rgba(192, 38, 211, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
@@ -160,9 +160,9 @@
     --bg: #16171d;
     --border: #2e303a;
     --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
+    --accent: #e879f9;
+    --accent-bg: rgba(232, 121, 249, 0.15);
+    --accent-border: rgba(232, 121, 249, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
@@ -180,9 +180,9 @@
   --bg: #16171d;
   --border: #2e303a;
   --code-bg: #1f2028;
-  --accent: #c084fc;
-  --accent-bg: rgba(192, 132, 252, 0.15);
-  --accent-border: rgba(192, 132, 252, 0.5);
+  --accent: #e879f9;
+  --accent-bg: rgba(232, 121, 249, 0.15);
+  --accent-border: rgba(232, 121, 249, 0.5);
   --social-bg: rgba(47, 48, 58, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
@@ -195,9 +195,9 @@
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
+  --accent: #c026d3;
+  --accent-bg: rgba(192, 38, 211, 0.1);
+  --accent-border: rgba(192, 38, 211, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;

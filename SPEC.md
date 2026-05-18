@@ -152,11 +152,11 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
 - ⬜ Graph view — React Flow, nodes = notes, edges = links
 - ⬜ Settings UI:
-  - ⬜ Global (app-settings.json)
-    - ⬜ Theme — light, dark, system default; visible on first launch
-    - ⬜ Editor font size — base size applied across all vaults
-    - ⬜ Restore last vault on launch — whether to reopen the previous active vault
-    - ⬜ Default new vault location — pre-fills the folder picker path
+  - ✅ Global (app-settings.json)
+    - ✅ Theme — light, dark, system default; visible on first launch
+    - ✅ Editor font size — base size applied across all vaults
+    - ✅ Restore last vault on launch — whether to reopen the previous active vault
+    - ✅ Default new vault location — pre-fills the folder picker path
   - ⬜ Per vault (.vault/settings.json)
     - ⬜ Vault name & color — already stored in the registry; just needs a settings pane to expose it
     - ⬜ Autosave delay — debounce before writing to disk (default ~2000ms); matters on slow disks with large vaults
