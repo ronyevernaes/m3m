@@ -14,6 +14,8 @@ import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
 import { NoteListItem } from './components/note/NoteListItem';
 import { SettingsDialog } from './components/settings/SettingsDialog';
+import { UpdateBanner } from './components/update/UpdateBanner';
+import { useUpdater } from './hooks/useUpdater';
 import { useUiStore } from './store/ui';
 import { useVaultStore } from './store/vault';
 import { useSettingsStore } from './store/settings';
@@ -38,6 +40,7 @@ export default function App() {
   const { selectedTag, setSelectedTag } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
+  const { update, isInstalling, dismissed, install, dismiss } = useUpdater();
   const { vaultSettings, loaded: vaultSettingsLoaded } = useVaultSettingsStore();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -228,6 +231,15 @@ export default function App() {
       />
 
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+
+      {update && !dismissed && (
+        <UpdateBanner
+          update={update}
+          isInstalling={isInstalling}
+          onInstall={install}
+          onDismiss={dismiss}
+        />
+      )}
     </div>
   );
 }

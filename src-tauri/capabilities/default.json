@@ -12,6 +12,7 @@
     "opener:default",
     "fs:default",
     "shell:default",
-    "updater:default"
+    "updater:default",
+    "process:allow-restart"
   ]
 }

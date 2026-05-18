@@ -75,6 +75,6 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: m3m ${{ github.ref_name }}
           releaseBody: See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes.
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
