@@ -178,11 +178,13 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
         </div>
       )}
 
-      {editor && <EditorToolbar editor={editor} />}
+      {editor && currentNote && <EditorToolbar editor={editor} />}
 
-      <div className="flex-1 overflow-y-auto">
-        <EditorContent editor={editor} className="h-full" />
-      </div>
+      {currentNote && (
+        <div className="flex-1 overflow-y-auto">
+          <EditorContent editor={editor} className="h-full" />
+        </div>
+      )}
     </div>
   );
 }
