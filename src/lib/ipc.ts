@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { NoteListItem, SearchResult, BacklinkItem } from '../types/note';
 import type { VaultEntry, VaultList } from '../types/vault';
-import type { AppSettings } from '../types/settings';
+import type { AppSettings, VaultSettings } from '../types/settings';
 
 export const listNotes = (vaultPath: string) =>
   invoke<NoteListItem[]>('list_notes', { vaultPath });
@@ -59,3 +59,12 @@ export const getSettings = () =>
 
 export const saveSettings = (settings: AppSettings) =>
   invoke<void>('save_settings', { settings });
+
+export const getVaultSettings = (vaultPath: string) =>
+  invoke<VaultSettings>('get_vault_settings', { vaultPath });
+
+export const saveVaultSettings = (vaultPath: string, settings: VaultSettings) =>
+  invoke<void>('save_vault_settings', { vaultPath, settings });
+
+export const updateVaultColor = (id: string, color: string) =>
+  invoke<void>('update_vault_color', { id, color });

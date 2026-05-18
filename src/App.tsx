@@ -18,6 +18,7 @@ import { GearIcon } from './components/icons/GearIcon';
 import { useUiStore } from './store/ui';
 import { useVaultStore } from './store/vault';
 import { useSettingsStore } from './store/settings';
+import { useVaultSettingsStore } from './store/vaultSettings';
 import { FONT_SIZE_PX } from './types/settings';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
@@ -38,6 +39,7 @@ export default function App() {
   const { selectedTag, setSelectedTag } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
+  const { vaultSettings, loaded: vaultSettingsLoaded } = useVaultSettingsStore();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<NoteListItemType | null>(null);
@@ -101,6 +103,14 @@ export default function App() {
       FONT_SIZE_PX[settings.editorFontSize],
     );
   }, [settings.editorFontSize]);
+
+  useEffect(() => {
+    if (vaultSettingsLoaded) {
+      document.documentElement.style.setProperty('--editor-line-width', `${vaultSettings.lineWidth}ch`);
+    } else {
+      document.documentElement.style.removeProperty('--editor-line-width');
+    }
+  }, [vaultSettingsLoaded, vaultSettings.lineWidth]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {

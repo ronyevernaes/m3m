@@ -199,6 +199,23 @@ pub async fn register_vault(
 }
 
 #[tauri::command]
+pub async fn update_vault_color(
+    id: String,
+    color: String,
+    app_handle: tauri::AppHandle,
+) -> Result<(), String> {
+    let reg_path = registry_path(
+        app_handle.path().app_data_dir().map_err(|e| e.to_string())?,
+    );
+    let mut reg = registry::load(&reg_path).map_err(|e| e.to_string())?;
+    let entry = reg.vaults.iter_mut().find(|e| e.id == id)
+        .ok_or_else(|| format!("Vault not found: {id}"))?;
+    entry.color = color;
+    registry::save(&reg_path, &reg).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn rename_vault(
     id: String,
     name: String,

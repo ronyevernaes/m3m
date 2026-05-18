@@ -21,3 +21,13 @@ export const DEFAULT_SETTINGS: AppSettings = {
   restoreLastVault: true,
   defaultVaultLocation: null,
 };
+
+export interface VaultSettings {
+  autosaveDelayMs: number;
+  lineWidth: number;
+}
+
+export const DEFAULT_VAULT_SETTINGS: VaultSettings = {
+  autosaveDelayMs: 2000,
+  lineWidth: 80,
+};

@@ -264,6 +264,9 @@ code {
 
 .ProseMirror {
   font-size: var(--editor-font-size);
+  max-width: var(--editor-line-width, none);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .ProseMirror pre {

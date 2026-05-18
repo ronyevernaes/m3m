@@ -5,8 +5,9 @@ import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
 import { createLowlight, all } from 'lowlight';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useVault } from '../../hooks/useVault';
+import { useVaultSettingsStore } from '../../store/vaultSettings';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
 import { EditorToolbar } from './EditorToolbar';
 import { Button } from '../ui/Button';
@@ -22,6 +23,9 @@ export function Editor({ className }: EditorProps) {
   const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, isDirty, error } = useVault();
   const suppressUpdate = useRef(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showSaved, setShowSaved] = useState(false);
+  const savedFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevIsDirty = useRef(isDirty);
 
   const editor = useEditor({
     extensions: [
@@ -50,9 +54,10 @@ export function Editor({ className }: EditorProps) {
       const markdown = tipTapToMarkdown(editor.getJSON());
       updateCurrentNoteBody(markdown);
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      const delay = useVaultSettingsStore.getState().vaultSettings.autosaveDelayMs;
       autoSaveTimerRef.current = setTimeout(() => {
         handleSaveRef.current();
-      }, 2000);
+      }, delay);
     };
     editor.on('update', handleUpdate);
     return () => {
@@ -67,6 +72,16 @@ export function Editor({ className }: EditorProps) {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     };
   }, [currentNote?.path]);
+
+  // Flash "Saved" when isDirty transitions from true → false (autosave or manual save).
+  useEffect(() => {
+    if (prevIsDirty.current && !isDirty) {
+      setShowSaved(true);
+      if (savedFlashTimer.current) clearTimeout(savedFlashTimer.current);
+      savedFlashTimer.current = setTimeout(() => setShowSaved(false), 2000);
+    }
+    prevIsDirty.current = isDirty;
+  }, [isDirty]);
 
   // Load note content into editor when the open note changes.
   useEffect(() => {
@@ -134,6 +149,9 @@ export function Editor({ className }: EditorProps) {
           )}
           {isDirty && !error && (
             <span className="text-xs text-foreground">Unsaved changes</span>
+          )}
+          {showSaved && !isDirty && !error && (
+            <span className="text-xs text-foreground">Saved</span>
           )}
           <Button intent="primary" size="sm" onClick={handleSave}>
             Save

@@ -1,12 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { XIcon } from '../icons/XIcon';
 import { GlobalSettingsPanel } from './GlobalSettingsPanel';
+import { VaultSettingsPanel } from './VaultSettingsPanel';
+import { cn } from '../../lib/cn';
+
+type Tab = 'app' | 'vault';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'app', label: 'App' },
+  { id: 'vault', label: 'Vault' },
+];
 
 interface SettingsDialogProps {
   onClose: () => void;
 }
 
 export function SettingsDialog({ onClose }: SettingsDialogProps) {
+  const [activeTab, setActiveTab] = useState<Tab>('app');
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -32,8 +43,27 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             <XIcon />
           </button>
         </div>
+
+        <div className="flex border-b border-border flex-shrink-0 px-6">
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setActiveTab(id)}
+              className={cn(
+                'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
+                activeTab === id
+                  ? 'border-brand-500 text-heading'
+                  : 'border-transparent text-foreground hover:text-heading',
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          <GlobalSettingsPanel />
+          {activeTab === 'app' ? <GlobalSettingsPanel /> : <VaultSettingsPanel />}
         </div>
       </div>
     </div>

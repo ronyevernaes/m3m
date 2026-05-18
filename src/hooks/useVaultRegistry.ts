@@ -8,8 +8,10 @@ import {
   revealVault,
   pickFolder,
   openVault,
+  updateVaultColor,
 } from '../lib/ipc';
 import { useVaultStore } from '../store/vault';
+import { useVaultSettingsStore } from '../store/vaultSettings';
 import type { VaultEntry } from '../types/vault';
 
 const PRESET_COLORS = ['#a855f7', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'];
@@ -29,6 +31,7 @@ export function useVaultRegistry() {
             await openVault(entry.path);
             store.setVaultPath(entry.path);
             store.setActiveVaultId(entry.id);
+            await useVaultSettingsStore.getState().loadVaultSettings(entry.path);
           } catch (e) {
             store.setError(`Could not restore vault "${entry.name}": ${String(e)}`);
           }
@@ -45,6 +48,7 @@ export function useVaultRegistry() {
     store.upsertVault(entry);
     store.setActiveVaultId(entry.id);
     store.setVaultPath(entry.path);
+    await useVaultSettingsStore.getState().loadVaultSettings(entry.path);
     return entry;
   }, [store.vaults.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -55,6 +59,7 @@ export function useVaultRegistry() {
     store.upsertVault(entry);
     store.setActiveVaultId(entry.id);
     store.setVaultPath(entry.path);
+    await useVaultSettingsStore.getState().loadVaultSettings(entry.path);
     return entry;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -67,6 +72,7 @@ export function useVaultRegistry() {
       await openVault(entry.path);
       store.setActiveVaultId(id);
       store.setVaultPath(entry.path);
+      await useVaultSettingsStore.getState().loadVaultSettings(entry.path);
     } catch (e) {
       store.setError(`Could not open vault "${entry.name}": ${String(e)}`);
     }
@@ -85,7 +91,14 @@ export function useVaultRegistry() {
       store.setActiveVaultId(null);
       store.setVaultPath(null);
       store.setCurrentNote(null);
+      useVaultSettingsStore.getState().reset();
     }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const updateVaultColorEntry = useCallback(async (id: string, color: string) => {
+    await updateVaultColor(id, color);
+    const entry = useVaultStore.getState().vaults.find((v) => v.id === id);
+    if (entry) store.upsertVault({ ...entry, color });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const revealVaultEntry = useCallback((path: string) => revealVault(path), []);
@@ -99,6 +112,7 @@ export function useVaultRegistry() {
     openExistingVault,
     switchVault,
     renameVaultEntry,
+    updateVaultColorEntry,
     removeVaultEntry,
     revealVaultEntry,
   };

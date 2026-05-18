@@ -4,6 +4,7 @@ pub mod frontmatter;
 pub mod indexer;
 mod models;
 pub mod registry;
+mod vault_settings;
 #[cfg(test)]
 mod tests;
 
@@ -66,6 +67,9 @@ pub fn run() {
             commands::graph::get_backlinks,
             commands::settings::get_settings,
             commands::settings::save_settings,
+            commands::vault::update_vault_color,
+            commands::vault_settings::get_vault_settings,
+            commands::vault_settings::save_vault_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
