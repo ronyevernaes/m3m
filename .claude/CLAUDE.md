@@ -81,6 +81,14 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 - Telegram bridge work → paste `## Telegram Bridge Architecture` from SPEC
 - Do not make any reference to Anthropic or Claude in the code or in the commit message
 
+## Commit conventions
+
+- Use [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): description`
+- Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `ci`
+- Scope is optional but encouraged (e.g. `feat(vault):`, `fix(indexer):`)
+- Subject line: imperative mood, no period, ≤72 chars
+- Never include references to AI tooling, Anthropic, or Claude in any commit message or trailer
+
 ## Testing conventions
 
 **Frontend — Vitest**
