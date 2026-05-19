@@ -11,20 +11,20 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     outputs:
-      release_id: ${{ steps.create-release.outputs.releaseId }}
+      release_id: ${{ steps.create-release.outputs.release_id }}
     steps:
       - uses: actions/checkout@v4
       - name: Create release
         id: create-release
-        uses: tauri-apps/tauri-action@v0
+        run: |
+          release_id=$(gh release create ${{ github.ref_name }} \
+            --title "m3m ${{ github.ref_name }}" \
+            --notes "See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes." \
+            --draft \
+            --json id --jq '.id')
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: ${{ github.ref_name }}
-          releaseName: m3m ${{ github.ref_name }}
-          releaseBody: See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes.
-          releaseDraft: true
-          prerelease: false
 
   build:
     needs: create-release
