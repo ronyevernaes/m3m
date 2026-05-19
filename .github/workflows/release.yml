@@ -65,7 +65,7 @@ jobs:
         run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       - name: Build and release
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -77,5 +77,5 @@ jobs:
           releaseBody: See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes.
           releaseDraft: true
           prerelease: false
-          releaseAssetNamePattern: '[name]_[arch][ext]'
+          assetNamePattern: '[name]_[arch][ext]'
           args: ${{ matrix.args }}
