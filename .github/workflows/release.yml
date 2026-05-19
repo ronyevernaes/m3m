@@ -77,5 +77,5 @@ jobs:
           releaseBody: See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes.
           releaseDraft: true
           prerelease: false
-          releaseAssetNamePattern: '[name]_v[version]_[arch][ext]'
+          releaseAssetNamePattern: '[name]_[arch][ext]'
           args: ${{ matrix.args }}
