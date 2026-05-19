@@ -17,11 +17,14 @@ jobs:
       - name: Create release
         id: create-release
         run: |
-          release_id=$(gh release create ${{ github.ref_name }} \
-            --title "m3m ${{ github.ref_name }}" \
-            --notes "See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes." \
-            --draft \
-            --json id --jq '.id')
+          release_id=$(gh api repos/${{ github.repository }}/releases \
+            --method POST \
+            -f tag_name="${{ github.ref_name }}" \
+            -f name="m3m ${{ github.ref_name }}" \
+            -f body="See [CHANGELOG.md](https://github.com/ronyevernaes/m3m/blob/main/CHANGELOG.md) for release notes." \
+            -F draft=true \
+            -F prerelease=false \
+            --jq '.id')
           echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
