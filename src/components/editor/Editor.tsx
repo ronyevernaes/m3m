@@ -48,6 +48,16 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     },
   });
 
+  // Read directly from the editor at save time — don't rely on store body being current.
+  const handleSave = useCallback(async () => {
+    if (!editor || editor.isDestroyed) return;
+    const markdown = tipTapToMarkdown(editor.getJSON());
+    await saveCurrentNote(markdown);
+  }, [editor, saveCurrentNote]);
+
+  const handleSaveRef = useRef(handleSave);
+  useEffect(() => { handleSaveRef.current = handleSave; }, [handleSave]);
+
   // Listen for content changes via editor.on so the callback is always current.
   useEffect(() => {
     if (!editor) return;
@@ -97,13 +107,6 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       suppressUpdate.current = false;
     }
   }, [editor, currentNote?.path]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Read directly from the editor at save time — don't rely on store body being current.
-  const handleSave = useCallback(async () => {
-    if (!editor || editor.isDestroyed) return;
-    const markdown = tipTapToMarkdown(editor.getJSON());
-    await saveCurrentNote(markdown);
-  }, [editor, saveCurrentNote]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
