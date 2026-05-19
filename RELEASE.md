@@ -91,3 +91,34 @@ Review the draft at `github.com/ronyevernaes/m3m/releases`, then publish it manu
 | `fix:` | Patch |
 | `feat:` | Minor |
 | `feat!:` or `BREAKING CHANGE:` | Major |
+
+---
+
+## Changelog management
+
+`release-plz update` auto-generates `CHANGELOG.md` entries from commit messages since the last tag. It only picks up commits that follow the Conventional Commits format — freeform messages like `"bug fix"` or `"update styles"` are silently ignored.
+
+### Writing commit messages that produce good changelog entries
+
+Write the subject line as a user-facing sentence, not a code description:
+
+```
+# Too technical — describes the code, not the value
+fix: resolve snake_case/camelCase mismatch in settings deserialization
+
+# Better — describes what the user experiences
+fix: "reopen last vault" preference now takes effect on app launch
+
+# Too vague — ignored by release-plz
+bug fix
+```
+
+The subject line is what ends up verbatim in the changelog, so make it something a user can understand without knowing the codebase.
+
+Use the commit **body** for implementation notes if needed — it does not appear in the changelog.
+
+### Transition period
+
+Until all commits consistently follow Conventional Commits, run `release-plz update` and then review the generated `CHANGELOG.md` before committing. Touch up any entries that are too technical, and manually add any user-visible changes that came from non-conventional commits.
+
+The goal is to reach a point where `release-plz update` output needs no editing. Track progress: fewer manual edits per release means the commit discipline is working.
