@@ -201,6 +201,8 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Modes: Edit, Preview, Source Code
 - ⬜ Notes linking
 - ⬜ Notes properties / metadata
+- ⬜ Power Search / Notes Explorer: Advanced filters based on metadata
+- ⬜ Templates: pre-filled propeties, content structure
 
 ## Vault Manager
 
