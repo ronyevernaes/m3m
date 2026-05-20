@@ -4,9 +4,10 @@ import { Button } from '../ui/Button';
 
 interface BacklinkPanelProps {
   onOpenNote: (path: string) => void;
+  width?: number;
 }
 
-export function BacklinkPanel({ onOpenNote }: BacklinkPanelProps) {
+export function BacklinkPanel({ onOpenNote, width = 256 }: BacklinkPanelProps) {
   const currentNote = useVaultStore((s) => s.currentNote);
   const noteId = currentNote?.frontmatter.id ?? null;
   const { backlinks, isLoading, error } = useBacklinks(noteId);
@@ -14,7 +15,7 @@ export function BacklinkPanel({ onOpenNote }: BacklinkPanelProps) {
   if (!currentNote) return null;
 
   return (
-    <div className="flex flex-col border-l border-border w-64 flex-shrink-0">
+    <div className="flex flex-col flex-shrink-0" style={{ width }}>
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
           Backlinks

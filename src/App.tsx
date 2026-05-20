@@ -16,6 +16,7 @@ import { NoteListItem } from './components/note/NoteListItem';
 import { SettingsDialog } from './components/settings/SettingsDialog';
 import { UpdateBanner } from './components/update/UpdateBanner';
 import { useUpdater } from './hooks/useUpdater';
+import { ResizeHandle } from './components/layout/ResizeHandle';
 import { useUiStore } from './store/ui';
 import { useVaultStore } from './store/vault';
 import { useSettingsStore } from './store/settings';
@@ -37,7 +38,7 @@ export default function App() {
     removeVaultEntry,
     revealVaultEntry,
   } = useVaultRegistry();
-  const { selectedTag, setSelectedTag } = useUiStore();
+  const { selectedTag, setSelectedTag, sidebarWidth, backlinkWidth, setSidebarWidth, setBacklinkWidth } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
   const { update, isInstalling, dismissed, install, dismiss } = useUpdater();
@@ -145,7 +146,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
-      <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
+      <aside style={{ width: sidebarWidth }} className="flex-shrink-0 flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <VaultSwitcher
             vaults={vaults}
@@ -201,11 +202,18 @@ export default function App() {
         <TagList notes={notes} />
       </aside>
 
+      <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} />
+
       <main className="flex-1 flex flex-col overflow-hidden">
         <Editor onSettingsClick={() => setShowSettings(true)} />
       </main>
 
-      {currentNote && <BacklinkPanel onOpenNote={openNote} />}
+      {currentNote && (
+        <>
+          <ResizeHandle side="right" initialWidth={backlinkWidth} onResize={setBacklinkWidth} />
+          <BacklinkPanel onOpenNote={openNote} width={backlinkWidth} />
+        </>
+      )}
 
       {showNewVaultDialog && (
         <NewVaultDialog
