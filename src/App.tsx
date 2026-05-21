@@ -5,7 +5,7 @@ import { useSearch } from './hooks/useSearch';
 import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
-import { BacklinkPanel } from './components/sidebar/BacklinkPanel';
+import { ContextPanel } from './components/context-panel/ContextPanel';
 import { TagList } from './components/sidebar/TagList';
 import { WelcomeScreen } from './components/vault/WelcomeScreen';
 import { VaultSwitcher } from './components/vault/VaultSwitcher';
@@ -38,7 +38,7 @@ export default function App() {
     removeVaultEntry,
     revealVaultEntry,
   } = useVaultRegistry();
-  const { selectedTag, setSelectedTag, sidebarWidth, backlinkWidth, setSidebarWidth, setBacklinkWidth } = useUiStore();
+  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth } = useUiStore();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
   const { update, isInstalling, dismissed, install, dismiss } = useUpdater();
@@ -210,8 +210,8 @@ export default function App() {
 
       {currentNote && (
         <>
-          <ResizeHandle side="right" initialWidth={backlinkWidth} onResize={setBacklinkWidth} />
-          <BacklinkPanel onOpenNote={openNote} width={backlinkWidth} />
+          <ResizeHandle side="right" initialWidth={contextPanelWidth} onResize={setContextPanelWidth} />
+          <ContextPanel onOpenNote={openNote} width={contextPanelWidth} />
         </>
       )}
 

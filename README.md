@@ -25,12 +25,20 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Markdown editor | Block-level editor (TipTap/ProseMirror), writes plain `.md` on save |
 | Vault watcher | `notify` crate rebuilds SQLite index on any `.md` change |
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
-| Backlink panel | Derived at index time from frontmatter + inline wikilinks |
+| Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable |
 | Tag sidebar | Auto-derived from YAML frontmatter |
 | Delete a note | Permanent file deletion with confirmation; hover trash icon in note list |
+| Resizable panels | Sidebar and context panel widths are drag-resizable and persisted |
+| Per-vault settings | Autosave delay, line width, vault name & color — stored in `.vault/settings.json` |
+| In-app updates | Checks for new releases on launch; dismissable install banner |
+| Vault Manager | Create, open, switch, rename, remove vaults |
+
+### Planned (P0)
+
+| Feature | Description |
+|---|---|
 | Daily note | `YYYY-MM-DD.md`, auto-linked to the previous day |
 | Graph view | React Flow — nodes are notes, edges are links |
-| Vault Manager | Create, open, switch, rename, remove vaults |
 
 ### AI (P1 — requires Ollama or API key)
 
@@ -93,16 +101,13 @@ Each vault is a self-contained folder. Multiple vaults can live anywhere on the 
 
 ```
 ~/Documents/WorkVault/
-├── note-slug.md
-├── subfolder/
-│   └── nested-note.md
+├── note-title-01J5ABCDEF.md   # filename = {slug}-{ulid}.md
 └── .vault/
-    ├── meta.json           # vault id (ulid), name, created date
-    ├── index.json          # note manifest, timestamps, tags
-    ├── graph.json          # backlinks + outlinks per note id
-    ├── embeddings.lance    # LanceDB vector index
-    ├── settings.json       # vault-level prefs (AI backend, theme override)
-    └── sync.bin            # Automerge doc (absent if sync off)
+    ├── meta.json               # vault id (ulid), name, created date
+    ├── index.db                # SQLite — notes, FTS5, note_links
+    ├── settings.json           # vault-level prefs (autosave, line width)
+    ├── embeddings.lance        # LanceDB vector index (planned, P1)
+    └── sync.bin                # Automerge doc, absent if sync off (planned, P2)
 ```
 
 The app registry lives outside vaults at the platform-appropriate path:
@@ -124,7 +129,7 @@ title: string
 created: ISO8601
 modified: ISO8601
 tags: [string]
-links: [ulid]   # explicit outlinks; backlinks derived at index time
+links: [ulid]   # explicit outlinks only; body wikilink extraction not yet implemented
 ---
 ```
 

@@ -146,7 +146,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Markdown editor — TipTap, writes plain `.md` on save; inline title editing in editor header
 - ✅ Vault watcher — `notify` crate rebuilds SQLite on `.md` change; emits `vault:index-updated`
 - ✅ Full-text search — SQLite FTS5 with snippets
-- ✅ Backlink panel — derived from `note_links` table, live-updated on watcher events
+- ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events
 - ✅ Tag sidebar — derived from frontmatter `tags`, per-tag note filtering
 - ✅ Delete a note — permanent file deletion with confirmation dialog; watcher cleans SQLite automatically
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
@@ -157,12 +157,14 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
     - ✅ Editor font size — base size applied across all vaults
     - ✅ Restore last vault on launch — whether to reopen the previous active vault
     - ✅ Default new vault location — pre-fills the folder picker path
-  - ⬜ Per vault (.vault/settings.json)
-    - ✅ Vault name & color — already stored in the registry; just needs a settings pane to expose it
-    - ✅ Autosave delay — debounce before writing to disk (default ~2000ms); matters on slow disks with large vaults
+  - ✅ Per vault (.vault/settings.json) — Vault tab in Settings dialog
+    - ✅ Vault name & color — editable in vault settings panel, persisted to registry
+    - ✅ Autosave delay — debounce before writing to disk (default 2000ms); segmented control: 500ms / 1s / 2s / 5s
+    - ✅ Line width — max characters per line in the editor (prose width); range slider 40–200ch, applied via CSS variable
     - ⬜ Daily note template — markdown template injected on creation; will differ heavily per vault type
     - ⬜ Note filename template — {slug}-{ulid} default, but many users expect date prefixes or title-only names
-    - ✅ Line width — max characters per line in the editor (prose width); developers want wider, writers want narrower
+- ✅ Resizable panels — sidebar and context panel widths are drag-resizable and persisted across sessions
+- ✅ In-app update notifications — `tauri-plugin-updater` checks for new releases on launch; dismissable banner guides user through install
 - ✅ Vault Manager — open, close, create, rename, remove vaults (see below)
 
 ### P1 — AI (requires Ollama or API key)
