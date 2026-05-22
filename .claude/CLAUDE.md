@@ -71,6 +71,8 @@ src/
 
 **Wikilinks** — `[[Note Title]]` in the note body is the canonical link syntax. The `WikilinkExtension` (TipTap inline atom node) renders these as styled chips and provides `[[` autocomplete. On save, all wikilink titles are resolved to ULIDs and written to `links[]` in frontmatter so the Rust indexer can populate `note_links` without any backend changes.
 
+**Markdown links** — `[Label](url)` syntax is handled by `LinkExtension` (`src/components/editor/extensions/LinkExtension.ts`), which extends TipTap's `@tiptap/extension-link` with a custom `InputRule` (auto-converts on `)`) and a `markPasteRule` (bare URLs). The `LinkTooltip` component (`src/components/editor/LinkTooltip.tsx`) is a `BubbleMenu` that appears on any link and allows opening, editing (label + URL), or unlinking. Opening URLs goes through `openUrl` in `src/lib/ipc.ts`, which normalises schemeless URLs to `https://` before calling `plugin:opener|open_url`. `window.prompt` is unavailable in Tauri's webview — the toolbar uses an inline input state instead.
+
 **Note deletion** — `delete_note` command removes the file on disk via `std::fs::remove_file`. The file watcher detects the Remove event and calls `indexer::remove_file()` to clean the notes table, FTS index, and outbound `note_links` from SQLite automatically. Frontend optimistically removes the note from the store and clears `currentNote` if it was open.
 
 ## Prompt conventions

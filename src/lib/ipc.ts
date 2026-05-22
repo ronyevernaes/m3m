@@ -68,3 +68,8 @@ export const saveVaultSettings = (vaultPath: string, settings: VaultSettings) =>
 
 export const updateVaultColor = (id: string, color: string) =>
   invoke<void>('update_vault_color', { id, color });
+
+export const openUrl = (url: string) => {
+  const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  return invoke<void>('plugin:opener|open_url', { url: normalized, with: null });
+};

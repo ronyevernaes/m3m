@@ -144,6 +144,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 ### P0 — MVP
 
 - ✅ Markdown editor — TipTap, writes plain `.md` on save; inline title editing in editor header
+- ✅ Markdown links — `[Label](url)` input rule auto-converts on closing `)`, bare URL paste auto-links; bubble menu (open, edit label + URL, unlink); Cmd/Ctrl+click opens URL via `plugin:opener`; toolbar inline URL input (no native dialog)
 - ✅ Vault watcher — `notify` crate rebuilds SQLite on `.md` change; emits `vault:index-updated`
 - ✅ Full-text search — SQLite FTS5 with snippets
 - ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events
