@@ -1,6 +1,6 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
-import { Link } from '@tiptap/extension-link';
+import { LinkExtension } from './extensions/LinkExtension';
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
@@ -11,6 +11,8 @@ import { useVaultSettingsStore } from '../../store/vaultSettings';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
 import { WikilinkExtension } from './extensions/WikilinkExtension';
 import { EditorToolbar } from './EditorToolbar';
+import { LinkTooltip } from './LinkTooltip';
+import { openUrl } from '../../lib/ipc';
 import { Button } from '../ui/Button';
 import { GearIcon } from '../icons/GearIcon';
 import { cn } from '../../lib/cn';
@@ -33,7 +35,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ codeBlock: false }),
-      Link.configure({
+      LinkExtension.configure({
         openOnClick: false,
         HTMLAttributes: { rel: 'noopener noreferrer', target: null },
       }),
@@ -45,7 +47,14 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     content: '',
     editorProps: {
       attributes: {
-        class: 'prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-full p-6',
+        class: 'prose prose-neutral max-w-none focus:outline-none min-h-full p-6',
+      },
+      handleClick(view, pos, event) {
+        if (!(event.ctrlKey || event.metaKey)) return false;
+        const linkMark = view.state.doc.resolve(pos).marks().find((m) => m.type.name === 'link');
+        if (!linkMark) return false;
+        openUrl(linkMark.attrs.href as string).catch(console.error);
+        return true;
       },
     },
   });
@@ -181,6 +190,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       )}
 
       {editor && currentNote && <EditorToolbar editor={editor} />}
+      {editor && <LinkTooltip editor={editor} />}
 
       {currentNote && (
         <div className="flex-1 overflow-y-auto">
