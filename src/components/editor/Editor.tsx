@@ -45,7 +45,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     content: '',
     editorProps: {
       attributes: {
-        class: 'prose prose-neutral max-w-none focus:outline-none min-h-full p-6',
+        class: 'prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-full p-6',
       },
     },
   });
