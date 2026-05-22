@@ -4,6 +4,7 @@ import { useVaultStore } from '../store/vault';
 import { listNotes, readNote, writeNote, renameNote, openVault, deleteNote as deleteNoteIpc } from '../lib/ipc';
 import { parseNote, stringifyNote } from '../lib/frontmatter';
 import { newUlid } from '../lib/ulid';
+import { extractWikilinkTitles, resolveLinksToIds } from '../lib/wikilinkSync';
 
 export function useVault() {
   const store = useVaultStore();
@@ -28,9 +29,15 @@ export function useVault() {
     setLoading(true);
     setError(null);
     try {
-      const noteToSave = bodyOverride !== undefined
-        ? { ...currentNote, body: bodyOverride }
-        : currentNote;
+      const body = bodyOverride !== undefined ? bodyOverride : currentNote.body;
+      const { notes } = useVaultStore.getState();
+      const wikilinkTitles = extractWikilinkTitles(body);
+      const resolvedIds = resolveLinksToIds(wikilinkTitles, notes);
+      const noteToSave = {
+        ...currentNote,
+        body,
+        frontmatter: { ...currentNote.frontmatter, links: resolvedIds },
+      };
       const rawContent = stringifyNote(noteToSave);
 
       let targetPath = currentNote.path;

@@ -2,6 +2,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
+import { visit } from 'unist-util-visit';
 import type { JSONContent } from '@tiptap/core';
 import type {
   Root,
@@ -22,15 +23,51 @@ import type {
   Delete,
 } from 'mdast';
 
+interface WikilinkMdastNode {
+  type: 'wikilink';
+  value: string;
+}
+
+const WIKILINK_RE = /\[\[([^\]]+)\]\]/g;
+
+function processWikilinks(tree: Root): Root {
+  visit(tree, 'text', (node: Text, index, parent) => {
+    if (!parent || index === undefined) return;
+    const text = node.value;
+    if (!WIKILINK_RE.test(text)) return;
+    WIKILINK_RE.lastIndex = 0;
+
+    const replacements: (Text | WikilinkMdastNode)[] = [];
+    let last = 0;
+    for (const match of text.matchAll(WIKILINK_RE)) {
+      if (match.index > last) {
+        replacements.push({ type: 'text', value: text.slice(last, match.index) });
+      }
+      replacements.push({ type: 'wikilink', value: match[1].trim() });
+      last = match.index + match[0].length;
+    }
+    if (last < text.length) {
+      replacements.push({ type: 'text', value: text.slice(last) });
+    }
+
+    (parent.children as (PhrasingContent | WikilinkMdastNode)[]).splice(index, 1, ...replacements);
+    return index + replacements.length;
+  });
+  return tree;
+}
+
 // ---- mdast → TipTap (ProseMirror JSON) ----
 
 type Mark = { type: string; attrs?: Record<string, unknown> };
 type TextNode = { type: 'text'; text: string; marks?: Mark[] };
+type WikilinkTipTapNode = { type: 'wikilink'; attrs: { title: string } };
 
-function flattenInline(nodes: PhrasingContent[], inherited: Mark[] = []): TextNode[] {
-  const result: TextNode[] = [];
+function flattenInline(nodes: (PhrasingContent | WikilinkMdastNode)[], inherited: Mark[] = []): (TextNode | WikilinkTipTapNode)[] {
+  const result: (TextNode | WikilinkTipTapNode)[] = [];
   for (const node of nodes) {
-    if (node.type === 'text') {
+    if (node.type === 'wikilink') {
+      result.push({ type: 'wikilink', attrs: { title: (node as WikilinkMdastNode).value } });
+    } else if (node.type === 'text') {
       const n = node as Text;
       if (n.value) result.push({ type: 'text', text: n.value, marks: inherited.length ? [...inherited] : undefined });
     } else if (node.type === 'strong') {
@@ -131,7 +168,7 @@ function mdastNodeToTipTap(node: Content): JSONContent | JSONContent[] | null {
 }
 
 export function markdownToTipTap(md: string): JSONContent {
-  const tree = unified().use(remarkParse).use(remarkGfm).parse(md) as Root;
+  const tree = processWikilinks(unified().use(remarkParse).use(remarkGfm).parse(md) as Root);
   const content: JSONContent[] = [];
   for (const node of tree.children) {
     const converted = mdastNodeToTipTap(node as Content);
@@ -170,6 +207,9 @@ function tiptapMarksToMdast(text: string, marks: Mark[]): PhrasingContent {
 
 function inlineToMdast(nodes: JSONContent[]): PhrasingContent[] {
   return nodes.flatMap((n) => {
+    if (n.type === 'wikilink') {
+      return [{ type: 'text', value: `[[${n.attrs?.title ?? ''}]]` } as Text];
+    }
     if (n.type === 'text') {
       const marks = (n.marks as Mark[] | undefined) ?? [];
       if (marks.length === 0) return [{ type: 'text', value: n.text ?? '' } as Text];
@@ -263,5 +303,6 @@ export function tipTapToMarkdown(json: JSONContent): string {
     return converted ? [converted] : [];
   });
   const root: Root = { type: 'root', children: nodes };
-  return unified().use(remarkStringify).use(remarkGfm).stringify(root);
+  // remark-stringify escapes `[` in plain text; unescape our wikilink `[[...]]` syntax.
+  return unified().use(remarkStringify).use(remarkGfm).stringify(root).replace(/\\\[\\\[([^\]]*)\]\]/g, '[[$1]]');
 }

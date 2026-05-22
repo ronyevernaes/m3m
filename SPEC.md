@@ -114,7 +114,7 @@ tags:
   - tag1
   - tag2
 links:
-  - <target-note-ulid>   # explicit outlinks only; body wikilink extraction not yet implemented
+  - <target-note-ulid>   # auto-populated from [[wikilinks]] in the note body on save
 ---
 ```
 
@@ -147,6 +147,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Vault watcher — `notify` crate rebuilds SQLite on `.md` change; emits `vault:index-updated`
 - ✅ Full-text search — SQLite FTS5 with snippets
 - ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events
+- ✅ Wikilinks — `[[Note Title]]` syntax in the editor body; autocomplete dropdown on `[[`; chip rendering (resolved/unresolved styling); `links[]` frontmatter auto-synced on save; backlinks tracked automatically via existing `note_links` table
 - ✅ Tag sidebar — derived from frontmatter `tags`, per-tag note filtering
 - ✅ Delete a note — permanent file deletion with confirmation dialog; watcher cleans SQLite automatically
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
@@ -201,7 +202,6 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Collapse sections in a document
 - ⬜ Actions in blocks of content (copy code in one click)
 - ⬜ Modes: Edit, Preview, Source Code
-- ⬜ Notes linking
 - ⬜ Notes properties / metadata
 - ⬜ Power Search / Notes Explorer: Advanced filters based on metadata
 - ⬜ Templates: pre-filled propeties, content structure

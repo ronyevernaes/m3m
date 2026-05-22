@@ -9,6 +9,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useVault } from '../../hooks/useVault';
 import { useVaultSettingsStore } from '../../store/vaultSettings';
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown';
+import { WikilinkExtension } from './extensions/WikilinkExtension';
 import { EditorToolbar } from './EditorToolbar';
 import { Button } from '../ui/Button';
 import { GearIcon } from '../icons/GearIcon';
@@ -22,7 +23,7 @@ interface EditorProps {
 }
 
 export function Editor({ className, onSettingsClick }: EditorProps) {
-  const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, isDirty, error } = useVault();
+  const { currentNote, updateCurrentNoteBody, updateCurrentNoteTitle, saveCurrentNote, openNote, isDirty, error } = useVault();
   const suppressUpdate = useRef(false);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSaved, setShowSaved] = useState(false);
@@ -39,6 +40,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       CodeBlockLowlight.configure({ lowlight }),
       TaskList,
       TaskItem.configure({ nested: true }),
+      WikilinkExtension.configure({ onNavigate: openNote }),
     ],
     content: '',
     editorProps: {

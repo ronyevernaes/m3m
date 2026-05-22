@@ -65,3 +65,31 @@ describe('markdownToTipTap', () => {
     expect(json.content?.[0]?.type).toBe('paragraph');
   });
 });
+
+describe('wikilink round-trip', () => {
+  it('single wikilink survives md→TipTap→md', () => {
+    expect(roundtrip('see [[My Note]] for details\n')).toBe('see [[My Note]] for details\n');
+  });
+
+  it('multiple wikilinks in one paragraph', () => {
+    expect(roundtrip('[[A]] and [[B]]\n')).toBe('[[A]] and [[B]]\n');
+  });
+
+  it('wikilink-only paragraph', () => {
+    expect(roundtrip('[[Solo]]\n')).toBe('[[Solo]]\n');
+  });
+
+  it('markdownToTipTap produces wikilink node', () => {
+    const json = markdownToTipTap('[[Target Note]]\n');
+    const para = json.content?.[0];
+    expect(para?.type).toBe('paragraph');
+    const wikilink = para?.content?.[0];
+    expect(wikilink?.type).toBe('wikilink');
+    expect(wikilink?.attrs?.title).toBe('Target Note');
+  });
+
+  it('wikilink adjacent to bold text', () => {
+    const md = '**bold** [[Link]] text\n';
+    expect(roundtrip(md)).toBe(md);
+  });
+});

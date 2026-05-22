@@ -26,6 +26,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Vault watcher | `notify` crate rebuilds SQLite index on any `.md` change |
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
 | Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable |
+| Wikilinks | `[[Note Title]]` syntax with autocomplete, chip rendering, and automatic backlink tracking |
 | Tag sidebar | Auto-derived from YAML frontmatter |
 | Delete a note | Permanent file deletion with confirmation; hover trash icon in note list |
 | Resizable panels | Sidebar and context panel widths are drag-resizable and persisted |
@@ -129,7 +130,7 @@ title: string
 created: ISO8601
 modified: ISO8601
 tags: [string]
-links: [ulid]   # explicit outlinks only; body wikilink extraction not yet implemented
+links: [ulid]   # auto-populated from [[wikilinks]] in the note body on save
 ---
 ```
 
