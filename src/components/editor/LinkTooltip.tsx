@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useEditorState } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import { getMarkRange } from '@tiptap/core';
@@ -17,7 +17,7 @@ interface LinkState {
 }
 
 export function LinkTooltip({ editor }: LinkTooltipProps) {
-  const [editing, setEditing] = useState(false);
+  const [editingLinkKey, setEditingLinkKey] = useState<string | null>(null);
   const [editHref, setEditHref] = useState('');
   const [editLabel, setEditLabel] = useState('');
   const savedRange = useRef<{ from: number; to: number } | null>(null);
@@ -42,16 +42,15 @@ export function LinkTooltip({ editor }: LinkTooltipProps) {
     },
   });
 
-  useEffect(() => {
-    if (!linkState) setEditing(false);
-  }, [linkState]);
+  const linkKey = linkState ? String(linkState.from) : null;
+  const editing = !!editingLinkKey && editingLinkKey === linkKey;
 
   const handleEdit = () => {
-    if (!linkState) return;
+    if (!linkState || !linkKey) return;
     setEditHref(linkState.href);
     setEditLabel(linkState.text);
     savedRange.current = { from: linkState.from, to: linkState.to };
-    setEditing(true);
+    setEditingLinkKey(linkKey);
   };
 
   const handleConfirm = () => {
@@ -68,7 +67,7 @@ export function LinkTooltip({ editor }: LinkTooltipProps) {
       }
       return true;
     }).run();
-    setEditing(false);
+    setEditingLinkKey(null);
   };
 
   const handleUnlink = () => editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -88,7 +87,7 @@ export function LinkTooltip({ editor }: LinkTooltipProps) {
             placeholder="Label"
             value={editLabel}
             onChange={(e) => setEditLabel(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm(); if (e.key === 'Escape') setEditing(false); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm(); if (e.key === 'Escape') setEditingLinkKey(null); }}
             className="text-sm bg-transparent outline-none text-foreground border-b border-border pb-1"
           />
           <input
@@ -96,12 +95,12 @@ export function LinkTooltip({ editor }: LinkTooltipProps) {
             placeholder="URL"
             value={editHref}
             onChange={(e) => setEditHref(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm(); if (e.key === 'Escape') setEditing(false); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm(); if (e.key === 'Escape') setEditingLinkKey(null); }}
             className="text-sm bg-transparent outline-none text-foreground"
           />
           <div className="flex gap-1 justify-end pt-1">
             <button type="button" onClick={handleConfirm} className="text-xs text-accent hover:text-heading px-1">Save</button>
-            <button type="button" onClick={() => setEditing(false)} className="text-xs text-foreground/50 hover:text-foreground px-1">Cancel</button>
+            <button type="button" onClick={() => setEditingLinkKey(null)} className="text-xs text-foreground/50 hover:text-foreground px-1">Cancel</button>
           </div>
         </div>
       ) : (

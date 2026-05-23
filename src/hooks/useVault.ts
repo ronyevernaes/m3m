@@ -146,23 +146,24 @@ export function useVault() {
   }, []);
 
   const initVault = useCallback(async (path: string) => {
-    store.setVaultPath(path);
-    store.setLoading(true);
-    store.setError(null);
+    const { setVaultPath, setLoading, setError, setNotes } = useVaultStore.getState();
+    setVaultPath(path);
+    setLoading(true);
+    setError(null);
     try {
       await openVault(path);
       const items = await listNotes(path);
-      store.setNotes(items);
+      setNotes(items);
     } catch (err) {
-      store.setError(String(err));
+      setError(String(err));
     } finally {
-      store.setLoading(false);
+      setLoading(false);
     }
     const unlisten = await listen('vault:index-updated', () => {
       loadNotes();
     });
     return unlisten;
-  }, []);
+  }, [loadNotes]);
 
   return {
     vaultPath: store.vaultPath,
