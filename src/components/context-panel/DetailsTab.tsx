@@ -2,6 +2,7 @@ import { useVault } from '../../hooks/useVault';
 import { useVaultStore } from '../../store/vault';
 import { AddPropertyRow } from './AddPropertyRow';
 import { PropertyRow } from './PropertyRow';
+import { TagEditorSection } from './TagEditorSection';
 
 const SYSTEM_KEYS = new Set(['id', 'title', 'created', 'modified', 'tags', 'links']);
 
@@ -59,18 +60,7 @@ export function DetailsTab() {
         <span className="text-xs">{formatDate(frontmatter.modified)}</span>
       </div>
 
-      {frontmatter.tags.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-foreground/60 uppercase tracking-wide">Tags</span>
-          <div className="flex flex-wrap gap-1">
-            {frontmatter.tags.map((tag) => (
-              <span key={tag} className="px-1.5 py-0.5 text-xs rounded bg-muted text-foreground">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+      <TagEditorSection />
 
       <div className="flex flex-col gap-0.5">
         <span className="text-xs text-foreground/60 uppercase tracking-wide">ID</span>

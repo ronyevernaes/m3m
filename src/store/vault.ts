@@ -21,6 +21,8 @@ interface VaultState {
   updateCurrentNoteTitle: (title: string) => void;
   updateCurrentNoteFrontmatterKey: (key: string, value: unknown) => void;
   deleteCurrentNoteFrontmatterKey: (key: string) => void;
+  addTagToCurrentNote: (tag: string) => void;
+  removeTagFromCurrentNote: (tag: string) => void;
   markClean: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -73,6 +75,33 @@ export const useVaultStore = create<VaultState>((set) => ({
       const { [key]: _, ...rest } = state.currentNote.frontmatter;
       return {
         currentNote: { ...state.currentNote, frontmatter: rest as Frontmatter },
+        isDirty: true,
+      };
+    }),
+  addTagToCurrentNote: (tag) =>
+    set((state) => {
+      if (!state.currentNote) return {};
+      const existing = state.currentNote.frontmatter.tags;
+      if (existing.includes(tag)) return {};
+      return {
+        currentNote: {
+          ...state.currentNote,
+          frontmatter: { ...state.currentNote.frontmatter, tags: [...existing, tag] },
+        },
+        isDirty: true,
+      };
+    }),
+  removeTagFromCurrentNote: (tag) =>
+    set((state) => {
+      if (!state.currentNote) return {};
+      return {
+        currentNote: {
+          ...state.currentNote,
+          frontmatter: {
+            ...state.currentNote.frontmatter,
+            tags: state.currentNote.frontmatter.tags.filter((t) => t !== tag),
+          },
+        },
         isDirty: true,
       };
     }),

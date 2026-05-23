@@ -149,7 +149,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Full-text search — SQLite FTS5 with snippets
 - ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events
 - ✅ Wikilinks — `[[Note Title]]` syntax in the editor body; autocomplete dropdown on `[[`; chip rendering (resolved/unresolved styling); `links[]` frontmatter auto-synced on save; backlinks tracked automatically via existing `note_links` table
-- ✅ Tag sidebar — derived from frontmatter `tags`, per-tag note filtering
+- ✅ Tags — derived from frontmatter `tags`; pill/chip visualization app-wide; per-tag note filtering in sidebar; full add/remove editing in the Details tab of the context panel (autocomplete from vault tags, confirm on Enter or comma, backspace removes last tag)
 - ✅ Delete a note — permanent file deletion with confirmation dialog; watcher cleans SQLite automatically
 - ⬜ Daily note — `YYYY-MM-DD.md`, auto-links to previous day
 - ⬜ Graph view — React Flow, nodes = notes, edges = links

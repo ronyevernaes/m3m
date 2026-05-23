@@ -1,7 +1,6 @@
 import type { NoteListItem } from '../../types/note';
 import { useUiStore } from '../../store/ui';
-import { Button } from '../ui/Button';
-import { cn } from '../../lib/cn';
+import { TagPill } from '../ui/TagPill';
 
 interface TagListProps {
   notes: NoteListItem[];
@@ -22,27 +21,20 @@ export function TagList({ notes }: TagListProps) {
   const sorted = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="flex-shrink-0 border-t border-border max-h-48 overflow-y-auto">
-      <div className="px-4 py-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-foreground">Tags</span>
+    <div className="flex-shrink-0 border-t border-border px-4 py-3">
+      <span className="text-xs font-semibold uppercase tracking-wide text-foreground block mb-2">Tags</span>
+      <div className="flex flex-wrap gap-1.5">
+        {sorted.map(([tag, count]) => (
+          <TagPill
+            key={tag}
+            variant="interactive"
+            label={tag}
+            count={count}
+            selected={selectedTag === tag}
+            onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+          />
+        ))}
       </div>
-      {sorted.map(([tag, count]) => (
-        <Button
-          key={tag}
-          intent="ghost"
-          size="sm"
-          onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-          className={cn(
-            'w-full justify-between rounded-none font-normal px-4',
-            selectedTag === tag
-              ? 'bg-accent-subtle text-accent hover:bg-accent-subtle hover:text-accent'
-              : 'text-foreground hover:bg-muted hover:text-foreground',
-          )}
-        >
-          <span className="truncate">{tag}</span>
-          <span className="ml-2 text-xs tabular-nums flex-shrink-0">{count}</span>
-        </Button>
-      ))}
     </div>
   );
 }
