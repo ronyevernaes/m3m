@@ -55,6 +55,12 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Socratic mode | AI challenges your claims using contradicting vault evidence |
 | Voice capture | Local Whisper → structured note, linked to existing notes |
 
+### Power (P3)
+
+| Feature | Description |
+|---|---|
+| Note properties | Inline CRUD for custom frontmatter key-value pairs; displayed and edited in the Details tab of the context panel |
+
 ### Sync & Capture (P2)
 
 - **BYOS sync** — encrypt vault, write Automerge CRDT patches to S3 / Dropbox / iCloud

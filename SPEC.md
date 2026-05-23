@@ -203,7 +203,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ Collapse sections in a document
 - ⬜ Actions in blocks of content (copy code in one click)
 - ⬜ Modes: Edit, Preview, Source Code
-- ⬜ Notes properties / metadata
+- ✅ Notes properties / metadata
 - ⬜ Power Search / Notes Explorer: Advanced filters based on metadata
 - ⬜ Templates: pre-filled propeties, content structure
 

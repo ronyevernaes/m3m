@@ -73,6 +73,8 @@ src/
 
 **Markdown links** — `[Label](url)` syntax is handled by `LinkExtension` (`src/components/editor/extensions/LinkExtension.ts`), which extends TipTap's `@tiptap/extension-link` with a custom `InputRule` (auto-converts on `)`) and a `markPasteRule` (bare URLs). The `LinkTooltip` component (`src/components/editor/LinkTooltip.tsx`) is a `BubbleMenu` that appears on any link and allows opening, editing (label + URL), or unlinking. Opening URLs goes through `openUrl` in `src/lib/ipc.ts`, which normalises schemeless URLs to `https://` before calling `plugin:opener|open_url`. `window.prompt` is unavailable in Tauri's webview — the toolbar uses an inline input state instead.
 
+**Note properties** — custom frontmatter keys (any key that is not `id`, `title`, `created`, `modified`, `tags`, `links`) are editable in the Details tab of the context panel. `SYSTEM_KEYS` is defined at module level in `AddPropertyRow.tsx` and mirrored in `DetailsTab.tsx` for filtering. Store actions `updateCurrentNoteFrontmatterKey` / `deleteCurrentNoteFrontmatterKey` in `vault.ts` handle mutations and mark the note dirty. All property values are stored as strings; `gray-matter` serialises them correctly in YAML. Save is triggered immediately after each mutation (same fire-and-forget pattern as the title input in `Editor.tsx`).
+
 **Note deletion** — `delete_note` command removes the file on disk via `std::fs::remove_file`. The file watcher detects the Remove event and calls `indexer::remove_file()` to clean the notes table, FTS index, and outbound `note_links` from SQLite automatically. Frontend optimistically removes the note from the store and clears `currentNote` if it was open.
 
 ## Prompt conventions

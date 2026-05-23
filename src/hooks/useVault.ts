@@ -175,6 +175,8 @@ export function useVault() {
     setVaultPath: store.setVaultPath,
     updateCurrentNoteBody: store.updateCurrentNoteBody,
     updateCurrentNoteTitle: store.updateCurrentNoteTitle,
+    updateCurrentNoteFrontmatterKey: store.updateCurrentNoteFrontmatterKey,
+    deleteCurrentNoteFrontmatterKey: store.deleteCurrentNoteFrontmatterKey,
     loadNotes,
     openNote,
     saveCurrentNote,
