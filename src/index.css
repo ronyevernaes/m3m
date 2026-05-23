@@ -278,6 +278,16 @@ code {
   margin-right: auto;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .ProseMirror {
+    color: var(--text);
+  }
+}
+
+:root.dark .ProseMirror {
+  color: var(--text);
+}
+
 .ProseMirror a {
   color: color-mix(in oklch, var(--accent) 60%, var(--text));
   text-decoration: underline;
