@@ -13,9 +13,11 @@ interface UiState {
   sidebarWidth: number;
   contextPanelWidth: number;
   contextPanelTab: ContextPanelTab;
+  advancedSearchOpen: boolean;
   setSidebarWidth: (w: number) => void;
   setContextPanelWidth: (w: number) => void;
   setContextPanelTab: (tab: ContextPanelTab) => void;
+  setAdvancedSearchOpen: (open: boolean) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -26,9 +28,11 @@ export const useUiStore = create<UiState>()(
       sidebarWidth: 256,
       contextPanelWidth: 256,
       contextPanelTab: 'details',
+      advancedSearchOpen: false,
       setSidebarWidth: (w) => set({ sidebarWidth: clamp(w) }),
       setContextPanelWidth: (w) => set({ contextPanelWidth: clamp(w) }),
       setContextPanelTab: (tab) => set({ contextPanelTab: tab }),
+      setAdvancedSearchOpen: (open) => set({ advancedSearchOpen: open }),
     }),
     {
       name: 'm3m-ui',
@@ -36,6 +40,7 @@ export const useUiStore = create<UiState>()(
         sidebarWidth: s.sidebarWidth,
         contextPanelWidth: s.contextPanelWidth,
         contextPanelTab: s.contextPanelTab,
+        advancedSearchOpen: s.advancedSearchOpen,
       }),
     }
   )

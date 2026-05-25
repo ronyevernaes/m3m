@@ -6,11 +6,10 @@ import { Editor } from './components/editor/Editor';
 import { Button } from './components/ui/Button';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { ContextPanel } from './components/context-panel/ContextPanel';
-import { TagList } from './components/sidebar/TagList';
+import { SearchSection } from './components/search/SearchSection';
 import { WelcomeScreen } from './components/vault/WelcomeScreen';
 import { VaultSwitcher } from './components/vault/VaultSwitcher';
 import { NewVaultDialog } from './components/vault/NewVaultDialog';
-import { SearchBar } from './components/search/SearchBar';
 import { SearchResults } from './components/search/SearchResults';
 import { NoteListItem } from './components/note/NoteListItem';
 import { SettingsDialog } from './components/settings/SettingsDialog';
@@ -176,7 +175,7 @@ export default function App() {
           </div>
         )}
 
-        <SearchBar query={searchQuery} onChange={handleSearchChange} />
+        <SearchSection query={searchQuery} onChange={handleSearchChange} notes={notes} />
 
         {searchQuery.trim() ? (
           <SearchResults
@@ -198,8 +197,6 @@ export default function App() {
             ))}
           </ul>
         )}
-
-        <TagList notes={notes} />
       </aside>
 
       <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} />

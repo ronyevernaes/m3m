@@ -28,7 +28,8 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
 | Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable |
 | Wikilinks | `[[Note Title]]` syntax with autocomplete, chip rendering, and automatic backlink tracking |
-| Tags | Pill/chip visualization in sidebar and context panel; per-tag note filtering; add/remove tags from the Details tab with autocomplete |
+| Tags | Pill/chip visualization in sidebar and context panel; per-tag note filtering via advanced search panel; add/remove tags from the Details tab with autocomplete |
+| Advanced search | Collapsible filter panel below the search bar (toggle via sliders icon); tag filter built-in; state persisted across sessions; extensible for future filters |
 | Delete a note | Permanent file deletion with confirmation; hover trash icon in note list |
 | Resizable panels | Sidebar and context panel widths are drag-resizable and persisted |
 | Per-vault settings | Autosave delay, line width, vault name & color — stored in `.vault/settings.json` |
