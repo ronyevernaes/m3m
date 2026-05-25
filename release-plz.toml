@@ -1,6 +1,5 @@
 [workspace]
 publish = false
-git_only = true
 
 [[package]]
 name = "m3m"

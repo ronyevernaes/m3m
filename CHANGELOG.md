@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-25
+
+### Added
+- Wikilinks — type `[[` in the editor to link notes by title; links render as styled chips with autocomplete, and backlinks are tracked automatically across the vault
+- Markdown link support — `[label](url)` syntax with click-to-open and an inline tooltip for editing or unlinking
+- Resizable panels — drag the dividers to set sidebar and context panel widths to your liking
+- Context panel with tabs — the backlinks panel is now a tabbed panel with dedicated sections for Backlinks, Properties, and Tags
+- Custom note properties — add any frontmatter field to a note from the Properties tab; existing unknown keys are preserved
+- Tag editing — add and remove tags directly from the Tags tab; tags display as styled chips with autocomplete from the vault
+- Advanced search panel — click the sliders button next to the search bar to expand tag-based filtering
+
+### Fixed
+- Editor text was difficult to read in dark mode
+- Links were not visible in dark mode
+
+---
+
 ## [0.1.1] - 2026-05-19
 
 ### Added
