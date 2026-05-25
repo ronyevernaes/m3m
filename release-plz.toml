@@ -4,3 +4,4 @@ publish = false
 [[package]]
 name = "m3m"
 changelog_path = "CHANGELOG.md"
+git_tag_name = "v{{ version }}"
