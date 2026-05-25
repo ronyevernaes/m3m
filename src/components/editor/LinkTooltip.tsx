@@ -77,7 +77,7 @@ export function LinkTooltip({ editor }: LinkTooltipProps) {
     <BubbleMenu
       editor={editor}
       shouldShow={({ editor: e }) => e.isActive('link')}
-      tippyOptions={{ placement: 'bottom', duration: 100 }}
+      options={{ placement: 'bottom' }}
     >
       {editing ? (
         <div className="flex flex-col gap-1 rounded-md border border-border bg-background px-2 py-2 shadow-md w-64">

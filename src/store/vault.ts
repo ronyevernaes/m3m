@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Note, NoteListItem } from '../types/note';
+import type { Note, NoteListItem, Frontmatter } from '../types/note';
 import type { VaultEntry } from '../types/vault';
 
 interface VaultState {
