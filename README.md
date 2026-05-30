@@ -26,7 +26,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Markdown links | `[Label](url)` auto-converts as you type; bare URL paste auto-links; bubble menu to open, edit (label + URL), or unlink; Cmd/Ctrl+click opens in browser |
 | Vault watcher | `notify` crate rebuilds SQLite index on any `.md` change |
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
-| Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable |
+| Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Details tab shows word count, dates, tags, and custom properties |
 | Wikilinks | `[[Note Title]]` syntax with autocomplete, chip rendering, and automatic backlink tracking |
 | Tags | Pill/chip visualization in sidebar and context panel; per-tag note filtering via advanced search panel; add/remove tags from the Details tab with autocomplete |
 | Advanced search | Collapsible filter panel below the search bar (toggle via sliders icon); tag filter built-in; state persisted across sessions; extensible for future filters |

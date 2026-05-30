@@ -147,7 +147,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Markdown links — `[Label](url)` input rule auto-converts on closing `)`, bare URL paste auto-links; bubble menu (open, edit label + URL, unlink); Cmd/Ctrl+click opens URL via `plugin:opener`; toolbar inline URL input (no native dialog)
 - ✅ Vault watcher — `notify` crate rebuilds SQLite on `.md` change; emits `vault:index-updated`
 - ✅ Full-text search — SQLite FTS5 with snippets
-- ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events
+- ✅ Context panel — multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Backlinks tab derived from `note_links` table, live-updated on watcher events; Details tab shows word count, created/modified dates, tags, and custom properties — note `id` is intentionally not displayed (internal identifier)
 - ✅ Wikilinks — `[[Note Title]]` syntax in the editor body; autocomplete dropdown on `[[`; chip rendering (resolved/unresolved styling); `links[]` frontmatter auto-synced on save; backlinks tracked automatically via existing `note_links` table
 - ✅ Tags — derived from frontmatter `tags`; pill/chip visualization app-wide; per-tag note filtering via advanced search panel in sidebar; full add/remove editing in the Details tab of the context panel (autocomplete from vault tags, confirm on Enter or comma, backspace removes last tag)
 - ✅ Advanced search panel — collapsible section between the search bar and the notes list; toggled by a sliders icon button to the right of the search input; tag filter included; open/closed state persisted to localStorage; designed to host future filter types (date ranges, properties, etc.)

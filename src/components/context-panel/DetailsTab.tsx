@@ -62,11 +62,6 @@ export function DetailsTab() {
 
       <TagEditorSection />
 
-      <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-foreground/60 uppercase tracking-wide">ID</span>
-        <span className="text-xs font-mono break-all text-foreground/60">{frontmatter.id}</span>
-      </div>
-
       <div className="flex flex-col gap-1">
         <span className="text-xs text-foreground/60 uppercase tracking-wide">Properties</span>
         {customEntries.length === 0 && (

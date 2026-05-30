@@ -67,7 +67,7 @@ src/
 
 **AI calls** — always check `settings.ai_backend` first: `local` → Ollama, `cloud` → user API key, `off` → disable AI UI. Never hardcode a model name; read from settings.
 
-**Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation. `links[]` is auto-populated on every save by extracting `[[wikilinks]]` from the note body and resolving note titles to ULIDs via the vault store. Never write to `links[]` manually from the frontend — let `saveCurrentNote` in `useVault.ts` handle it via `extractWikilinkTitles` + `resolveLinksToIds` (`src/lib/wikilinkSync.ts`).
+**Frontmatter id** — use ULID. Generate on first save if absent. Never change after creation. Not surfaced in the Details tab — internal identifier only. `links[]` is auto-populated on every save by extracting `[[wikilinks]]` from the note body and resolving note titles to ULIDs via the vault store. Never write to `links[]` manually from the frontend — let `saveCurrentNote` in `useVault.ts` handle it via `extractWikilinkTitles` + `resolveLinksToIds` (`src/lib/wikilinkSync.ts`).
 
 **Wikilinks** — `[[Note Title]]` in the note body is the canonical link syntax. The `WikilinkExtension` (TipTap inline atom node) renders these as styled chips and provides `[[` autocomplete. On save, all wikilink titles are resolved to ULIDs and written to `links[]` in frontmatter so the Rust indexer can populate `note_links` without any backend changes.
 
