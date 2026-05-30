@@ -20,7 +20,7 @@ import { useUiStore } from './store/ui';
 import { useVaultStore } from './store/vault';
 import { useSettingsStore } from './store/settings';
 import { useVaultSettingsStore } from './store/vaultSettings';
-import { FONT_SIZE_PX } from './types/settings';
+import { FONT_SIZE_PX, FONT_FAMILY_CSS } from './types/settings';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
@@ -105,6 +105,13 @@ export default function App() {
       FONT_SIZE_PX[settings.editorFontSize],
     );
   }, [settings.editorFontSize]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--editor-font-family',
+      FONT_FAMILY_CSS[settings.editorFontFamily],
+    );
+  }, [settings.editorFontFamily]);
 
   useEffect(() => {
     if (vaultSettingsLoaded) {

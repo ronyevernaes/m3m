@@ -3,11 +3,17 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+fn default_editor_font_family() -> String {
+    "inter".to_string()
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
     pub theme: String,
     pub editor_font_size: String,
+    #[serde(default = "default_editor_font_family")]
+    pub editor_font_family: String,
     pub restore_last_vault: bool,
     pub default_vault_location: Option<String>,
 }
@@ -17,6 +23,7 @@ impl Default for AppSettings {
         Self {
             theme: "system".to_string(),
             editor_font_size: "medium".to_string(),
+            editor_font_family: "inter".to_string(),
             restore_last_vault: true,
             default_vault_location: None,
         }

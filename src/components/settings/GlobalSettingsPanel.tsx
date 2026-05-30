@@ -1,7 +1,8 @@
 import { useSettingsStore } from '../../store/settings';
 import { pickFolder } from '../../lib/ipc';
 import { cn } from '../../lib/cn';
-import type { Theme, EditorFontSize } from '../../types/settings';
+import { Select } from '../ui/Select';
+import type { Theme, EditorFontSize, EditorFontFamily } from '../../types/settings';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'system', label: 'System' },
@@ -14,6 +15,13 @@ const FONT_SIZES: { value: EditorFontSize; label: string }[] = [
   { value: 'medium', label: 'Medium' },
   { value: 'large', label: 'Large' },
   { value: 'x-large', label: 'Extra-Large' },
+];
+
+const FONT_FAMILIES: { value: EditorFontFamily; label: string }[] = [
+  { value: 'inter', label: 'Inter' },
+  { value: 'lora', label: 'Lora' },
+  { value: 'mono', label: 'Mono' },
+  { value: 'system', label: 'System' },
 ];
 
 export function GlobalSettingsPanel() {
@@ -69,6 +77,18 @@ export function GlobalSettingsPanel() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-heading">Editor font</label>
+          <Select
+            value={settings.editorFontFamily}
+            onChange={(e) => updateSettings({ editorFontFamily: e.target.value as EditorFontFamily })}
+          >
+            {FONT_FAMILIES.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </Select>
         </div>
       </section>
 

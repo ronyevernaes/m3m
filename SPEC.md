@@ -158,6 +158,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
   - ✅ Global (app-settings.json)
     - ✅ Theme — light, dark, system default; visible on first launch
     - ✅ Editor font size — base size applied across all vaults
+    - ✅ Editor font family — body font applied across all vaults; choices: Inter, Lora, JetBrains Mono, system default; dropdown selector
     - ✅ Restore last vault on launch — whether to reopen the previous active vault
     - ✅ Default new vault location — pre-fills the folder picker path
   - ✅ Per vault (.vault/settings.json) — Vault tab in Settings dialog

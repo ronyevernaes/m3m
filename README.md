@@ -32,6 +32,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Advanced search | Collapsible filter panel below the search bar (toggle via sliders icon); tag filter built-in; state persisted across sessions; extensible for future filters |
 | Delete a note | Permanent file deletion with confirmation; hover trash icon in note list |
 | Resizable panels | Sidebar and context panel widths are drag-resizable and persisted |
+| Global settings | Theme, editor font family & size, restore-last-vault behaviour, default vault location |
 | Per-vault settings | Autosave delay, line width, vault name & color — stored in `.vault/settings.json` |
 | In-app updates | Checks for new releases on launch; dismissable install banner |
 | Vault Manager | Create, open, switch, rename, remove vaults |

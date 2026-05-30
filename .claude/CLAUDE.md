@@ -128,3 +128,14 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 - No inline styles, no arbitrary values unless truly one-off
 - Every component accepts a `className` prop for consumer overrides
 - Spacing follows the 4px grid: use scale values (p-2, p-4, gap-6), not arbitrary
+
+## UI Primitives — `src/components/ui/`
+
+| Component | Notes |
+|---|---|
+| `Button` | CVA; `intent` (primary/secondary/ghost/danger) × `size` (sm/md/lg); `sm` = `py-1.5 text-sm` |
+| `Select` | Native `<select>` with custom chevron SVG; `py-1.5 text-sm` matches `Button sm` height; `appearance-none` resets browser defaults; use for any dropdown choice |
+| `FormInput` | Text input; `py-2.5 text-sm`; use for larger form contexts (e.g. text fields, paths) |
+| `TagPill` | CVA; variants: `default` (read-only), `interactive` (clickable), `removable` (with × button) |
+| `FieldLabel` | Uppercase tracking-wider section label |
+| `ConfirmDialog` | Modal for destructive actions |
