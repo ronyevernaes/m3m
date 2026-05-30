@@ -36,6 +36,7 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
     { label: '1. List', onClick: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
     { label: '```', onClick: () => editor.chain().focus().toggleCodeBlock().run(), isActive: () => editor.isActive('codeBlock') },
     { label: '☐ List', onClick: () => editor.chain().focus().toggleTaskList().run(), isActive: () => editor.isActive('taskList') },
+    { label: '>', onClick: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive('blockquote') },
   ];
 
   const handleLinkButtonClick = () => {

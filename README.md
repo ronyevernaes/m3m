@@ -24,6 +24,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 |---|---|
 | Markdown editor | Block-level editor (TipTap/ProseMirror), writes plain `.md` on save |
 | Markdown links | `[Label](url)` auto-converts as you type; bare URL paste auto-links; bubble menu to open, edit (label + URL), or unlink; Cmd/Ctrl+click opens in browser |
+| Blockquotes | `> ` auto-converts to a blockquote block; toolbar `>` button toggles; styled with accent-color left border |
 | Vault watcher | `notify` crate rebuilds SQLite index on any `.md` change |
 | Full-text search | SQLite FTS5 — fast, offline, no external service |
 | Context panel | Multi-tab inspector (Details, Links, Backlinks, Insights, Agent); resizable; Details tab shows word count, dates, tags, and custom properties |

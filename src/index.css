@@ -300,6 +300,14 @@ code {
   color: var(--accent);
 }
 
+.ProseMirror blockquote {
+  border-left: 3px solid var(--accent-border);
+  padding-left: 1em;
+  margin-left: 0;
+  color: color-mix(in oklch, var(--text) 70%, var(--bg));
+  font-style: italic;
+}
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
