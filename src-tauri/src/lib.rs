@@ -13,7 +13,6 @@ use std::sync::Mutex;
 
 use notify::RecommendedWatcher;
 use sqlx::SqlitePool;
-use tauri::Manager;
 
 pub struct VaultContext {
     pub vault_root: PathBuf,
@@ -43,8 +42,6 @@ pub fn run() {
                         .level(log::LevelFilter::Info)
                         .build(),
                 )?;
-                let window = app.get_webview_window("main").unwrap();
-                window.open_devtools();
             }
             Ok(())
         })

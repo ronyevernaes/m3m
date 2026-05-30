@@ -81,6 +81,8 @@ src/
 
 **Note deletion** — `delete_note` command removes the file on disk via `std::fs::remove_file`. The file watcher detects the Remove event and calls `indexer::remove_file()` to clean the notes table, FTS index, and outbound `note_links` from SQLite automatically. Frontend optimistically removes the note from the store and clears `currentNote` if it was open.
 
+**DevTools** — gated behind the `devtools` Cargo feature (`src-tauri/Cargo.toml`). The `tauri:dev` npm script passes `-- --features devtools` to enable right-click "Inspect Element" in development without auto-opening the panel. Production `tauri build` never passes the flag so the menu item is compiled out. Never add `devtools` to the default `[features]` or to the `tauri` dependency's feature list directly.
+
 ## Prompt conventions
 
 When starting work on a specific area, include the relevant section from `SPEC.md`:

@@ -166,8 +166,10 @@ bun install
 ### Run
 
 ```bash
-bun tauri dev
+bun tauri:dev
 ```
+
+> DevTools (right-click → Inspect) are available in dev builds and hidden by default (no auto-open). They are compiled out entirely in production builds.
 
 ### Test
 

@@ -372,3 +372,4 @@ notify watcher → index → AI pipeline
 ## Build Notes
 
 - Google Fonts `@import` requires internet. For fully offline production Tauri builds, bundle fonts via `@font-face` pointing at local files and remove the `@import`.
+- DevTools are gated behind a Cargo feature (`devtools = ["tauri/devtools"]` in `src-tauri/Cargo.toml`). The `tauri:dev` script passes `-- --features devtools` so right-click "Inspect Element" is available in development. Production builds omit the flag — the menu item is compiled out entirely. Never add `devtools` to the default feature set.
