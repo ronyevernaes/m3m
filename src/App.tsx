@@ -3,6 +3,7 @@ import { useVault } from './hooks/useVault';
 import { useVaultRegistry } from './hooks/useVaultRegistry';
 import { useSearch } from './hooks/useSearch';
 import { Editor } from './components/editor/Editor';
+import { TabBar } from './components/editor/TabBar';
 import { Button } from './components/ui/Button';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { ContextPanel } from './components/context-panel/ContextPanel';
@@ -24,7 +25,7 @@ import { FONT_SIZE_PX, FONT_FAMILY_CSS } from './types/settings';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
-  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, deleteNote, saveCurrentNote, error } = useVault();
+  const { notes, currentNote, vaultPath, loadNotes, openNote, newNote, deleteNote, saveAllDirtyTabs, closeTab, switchTab, openTabs, activeTabPath, error } = useVault();
   const {
     vaults,
     activeVaultId,
@@ -61,8 +62,8 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [searchQuery, search, clearSearch]);
 
-  const saveCurrentNoteRef = useRef(saveCurrentNote);
-  useEffect(() => { saveCurrentNoteRef.current = saveCurrentNote; }, [saveCurrentNote]);
+  const saveAllDirtyTabsRef = useRef(saveAllDirtyTabs);
+  useEffect(() => { saveAllDirtyTabsRef.current = saveAllDirtyTabs; }, [saveAllDirtyTabs]);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -72,10 +73,7 @@ export default function App() {
       unlisten = await appWindow.onCloseRequested(async (event) => {
         event.preventDefault();
         try {
-          const { isDirty, currentNote: note } = useVaultStore.getState();
-          if (isDirty && note) {
-            await saveCurrentNoteRef.current();
-          }
+          await saveAllDirtyTabsRef.current();
         } finally {
           appWindow.destroy();
         }
@@ -121,11 +119,21 @@ export default function App() {
     }
   }, [vaultSettingsLoaded, vaultSettings.lineWidth]);
 
+  const closeTabRef = useRef(closeTab);
+  useEffect(() => { closeTabRef.current = closeTab; }, [closeTab]);
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === ',') {
         e.preventDefault();
         setShowSettings((v) => !v);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+        const { activeTabPath: path } = useVaultStore.getState();
+        if (path) {
+          e.preventDefault();
+          closeTabRef.current(path);
+        }
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -209,6 +217,18 @@ export default function App() {
       <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} />
 
       <main className="flex-1 flex flex-col overflow-hidden">
+        {openTabs.length > 0 && (
+          <TabBar
+            tabs={openTabs.map((t) => ({
+              path: t.note.path,
+              title: t.note.frontmatter.title,
+              isDirty: t.isDirty,
+            }))}
+            activeTabPath={activeTabPath}
+            onTabClick={switchTab}
+            onTabClose={closeTab}
+          />
+        )}
         <Editor onSettingsClick={() => setShowSettings(true)} />
       </main>
 

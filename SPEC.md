@@ -168,6 +168,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
     - ✅ Line width — max characters per line in the editor (prose width); range slider 40–200ch, applied via CSS variable
     - ⬜ Daily note template — markdown template injected on creation; will differ heavily per vault type
     - ⬜ Note filename template — {slug}-{ulid} default, but many users expect date prefixes or title-only names
+- ✅ Note tabs — multi-tab editor strip; each opened note becomes a tab; `openTabs` in vault store caches full `Note` per tab; switching is instant (no disk read if already open); dirty indicator dot per tab; Cmd+W closes the active tab; dirty tabs auto-save on close and on app quit
 - ✅ Resizable panels — sidebar and context panel widths are drag-resizable and persisted across sessions
 - ✅ In-app update notifications — `tauri-plugin-updater` checks for new releases on launch; dismissable banner guides user through install
 - ✅ Vault Manager — open, close, create, rename, remove vaults (see below)

@@ -37,6 +37,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Per-vault settings | Autosave delay, line width, vault name & color — stored in `.vault/settings.json` |
 | In-app updates | Checks for new releases on launch; dismissable install banner |
 | Vault Manager | Create, open, switch, rename, remove vaults |
+| Note tabs | Multi-tab strip above the editor; each opened note is a separate tab; dirty indicator dot; Cmd+W closes the active tab; auto-saves dirty tabs on close and on app quit |
 
 ### Planned (P0)
 

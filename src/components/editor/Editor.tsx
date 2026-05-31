@@ -96,6 +96,11 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     };
   }, [currentNote?.path]);
 
+  // Reset prevIsDirty when the active note changes to prevent a spurious "Saved" flash on tab switch.
+  useEffect(() => {
+    prevIsDirty.current = isDirty;
+  }, [currentNote?.path]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Flash "Saved" when isDirty transitions from true → false (autosave or manual save).
   useEffect(() => {
     if (prevIsDirty.current && !isDirty) {

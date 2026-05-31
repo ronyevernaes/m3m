@@ -31,6 +31,8 @@ beforeEach(() => {
     isDirty: false,
     isLoading: false,
     error: null,
+    openTabs: [],
+    activeTabPath: null,
   });
 });
 
@@ -79,20 +81,16 @@ describe('useVault', () => {
   });
 
   it('deleteNote clears currentNote when the deleted note is open', async () => {
+    const noteA = {
+      path: '/vault/note-a.md',
+      frontmatter: { id: 'abc', title: 'Note A', created: '', modified: '', tags: [], links: [] },
+      body: '',
+    };
     useVaultStore.setState({
       notes: [{ id: 'abc', title: 'Note A', path: '/vault/note-a.md', modified: '', tags: [] }],
-      currentNote: {
-        path: '/vault/note-a.md',
-        frontmatter: {
-          id: 'abc',
-          title: 'Note A',
-          created: '',
-          modified: '',
-          tags: [],
-          links: [],
-        },
-        body: '',
-      },
+      currentNote: noteA,
+      activeTabPath: noteA.path,
+      openTabs: [{ note: noteA, isDirty: false }],
     });
     mockInvoke.mockResolvedValueOnce(undefined);
 
