@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { Editor } from '@tiptap/core';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/cn';
+import { MarkdownHelpDialog } from './MarkdownHelpDialog';
 
 interface ToolbarProps {
   editor: Editor;
@@ -17,6 +18,7 @@ interface ToolbarButton {
 export function EditorToolbar({ editor, className }: ToolbarProps) {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkValue, setLinkValue] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
   const linkInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -107,6 +109,19 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
           Link
         </Button>
       )}
+
+      <Button
+        intent="ghost"
+        size="sm"
+        onClick={() => setShowHelp(true)}
+        aria-label="Markdown help"
+        title="Markdown reference"
+        className="font-mono ml-auto"
+      >
+        ?
+      </Button>
+
+      {showHelp && <MarkdownHelpDialog onClose={() => setShowHelp(false)} />}
     </div>
   );
 }
