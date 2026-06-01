@@ -66,6 +66,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Feature | Description |
 |---|---|
 | Note properties | Inline CRUD for custom frontmatter key-value pairs; displayed and edited in the Details tab of the context panel |
+| Collapsible sections | Click the chevron on any heading to fold the section beneath it; state persisted per-note across sessions |
 
 ### Sync & Capture (P2)
 

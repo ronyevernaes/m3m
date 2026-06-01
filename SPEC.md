@@ -206,7 +206,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ⬜ BYOM — swap AI backend per-feature (Ollama / Claude API / OpenAI API)
 - ⬜ Cross-vault AI connections — AI surfaces links between notes across vaults
 - ⬜ Outline panel
-- ⬜ Collapse sections in a document
+- ✅ Collapse sections in a document — chevron toggle on each heading folds all block content until the next equal-or-higher-level heading; `CollapsibleHeadingExtension` (`src/components/editor/extensions/CollapsibleHeadingExtension.ts`); state stored in `useUiStore.collapsedSections` (localStorage, keyed by note ULID); content hidden via `pm-section-hidden` decorations — document is never modified; print CSS always expands all sections
 - ⬜ Actions in blocks of content (copy code in one click)
 - ⬜ Modes: Edit, Preview, Source Code
 - ✅ Notes properties / metadata

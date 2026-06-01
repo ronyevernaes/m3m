@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { LinkExtension } from './extensions/LinkExtension'
+import { CollapsibleHeadingExtension } from './extensions/CollapsibleHeadingExtension'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
@@ -8,6 +9,7 @@ import { createLowlight, all } from 'lowlight'
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useVault } from '../../hooks/useVault'
 import { useVaultSettingsStore } from '../../store/vaultSettings'
+import { useUiStore } from '../../store/ui'
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown'
 import { WikilinkExtension } from './extensions/WikilinkExtension'
 import { EditorToolbar } from './EditorToolbar'
@@ -55,7 +57,8 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      StarterKit.configure({ codeBlock: false, heading: false }),
+      CollapsibleHeadingExtension,
       LinkExtension.configure({
         openOnClick: false,
         HTMLAttributes: { rel: 'noopener noreferrer', target: null },
@@ -136,6 +139,18 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     }
     prevIsDirty.current = isDirty
   }, [isDirty])
+
+  // Sync collapsed-section state into the extension storage before content loads.
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const noteId = currentNote?.frontmatter.id ?? ''
+    const ext = editor.extensionManager.extensions.find((e) => e.name === 'heading')
+    if (!ext) return
+    const storage = ext.storage as { collapsedSections: Set<string>; noteId: string }
+    storage.noteId = noteId
+    const persisted = useUiStore.getState().collapsedSections[noteId] ?? []
+    storage.collapsedSections = new Set(persisted)
+  }, [editor, currentNote?.path]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load note content into editor when the open note changes.
   useEffect(() => {

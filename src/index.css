@@ -308,6 +308,10 @@ code {
   font-style: italic;
 }
 
+.pm-section-hidden {
+  display: none;
+}
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
@@ -450,6 +454,10 @@ code {
     color: #555555 !important;
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  .pm-section-hidden {
+    display: block !important;
   }
 
   /* Code blocks: force light background + dark text including syntax tokens */

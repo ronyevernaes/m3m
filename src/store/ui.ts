@@ -18,6 +18,8 @@ interface UiState {
   setContextPanelWidth: (w: number) => void;
   setContextPanelTab: (tab: ContextPanelTab) => void;
   setAdvancedSearchOpen: (open: boolean) => void;
+  collapsedSections: Record<string, string[]>;
+  toggleSectionCollapsed: (noteId: string, key: string) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -33,6 +35,15 @@ export const useUiStore = create<UiState>()(
       setContextPanelWidth: (w) => set({ contextPanelWidth: clamp(w) }),
       setContextPanelTab: (tab) => set({ contextPanelTab: tab }),
       setAdvancedSearchOpen: (open) => set({ advancedSearchOpen: open }),
+      collapsedSections: {},
+      toggleSectionCollapsed: (noteId, key) =>
+        set((s) => {
+          const current = s.collapsedSections[noteId] ?? []
+          const next = current.includes(key)
+            ? current.filter((k) => k !== key)
+            : [...current, key]
+          return { collapsedSections: { ...s.collapsedSections, [noteId]: next } }
+        }),
     }),
     {
       name: 'm3m-ui',
@@ -41,6 +52,7 @@ export const useUiStore = create<UiState>()(
         contextPanelWidth: s.contextPanelWidth,
         contextPanelTab: s.contextPanelTab,
         advancedSearchOpen: s.advancedSearchOpen,
+        collapsedSections: s.collapsedSections,
       }),
     }
   )
