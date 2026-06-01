@@ -13,6 +13,7 @@ interface TabBarProps {
   activeTabPath: string | null;
   onTabClick: (path: string) => void;
   onTabClose: (path: string) => void;
+  className?: string;
 }
 
 const tabItem = cva(
@@ -33,9 +34,9 @@ const tabItem = cva(
   }
 );
 
-export function TabBar({ tabs, activeTabPath, onTabClick, onTabClose }: TabBarProps) {
+export function TabBar({ tabs, activeTabPath, onTabClick, onTabClose, className }: TabBarProps) {
   return (
-    <div className="flex border-b border-border overflow-x-auto flex-shrink-0 bg-muted/30">
+    <div className={cn('flex border-b border-border overflow-x-auto flex-shrink-0 bg-muted/30', className)}>
       {tabs.map((tab) => {
         const isActive = tab.path === activeTabPath;
         return (

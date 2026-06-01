@@ -365,3 +365,109 @@ code {
 .ProseMirror ul[data-type='taskList'] > li > div > p {
   margin: 0 !important;
 }
+
+@page {
+  margin: 2.5cm 3cm;
+}
+
+@media print {
+  /* Force light-mode CSS variables regardless of active theme */
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --text-h: #000000;
+    --code-bg: #f4f4f4;
+    --border: #e0e0e0;
+    --accent-border: #aaaaaa;
+    color-scheme: light !important;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+
+  #root {
+    height: auto !important;
+    min-height: unset !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  main {
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  [data-editor-print-content] {
+    overflow: visible !important;
+    height: auto !important;
+    flex: none !important;
+  }
+
+  /* EditorContent wrapper div (className="h-full") */
+  [data-editor-print-content] > div {
+    height: auto !important;
+  }
+
+  .ProseMirror {
+    min-height: auto !important;
+    padding: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    color: #1a1a1a !important;
+    background: white !important;
+  }
+
+  .ProseMirror p,
+  .ProseMirror li,
+  .ProseMirror td,
+  .ProseMirror th {
+    color: #1a1a1a !important;
+  }
+
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3,
+  .ProseMirror h4,
+  .ProseMirror h5,
+  .ProseMirror h6 {
+    color: #000000 !important;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .ProseMirror a {
+    color: #1a1a1a !important;
+  }
+
+  .ProseMirror blockquote {
+    border-left-color: #aaaaaa !important;
+    color: #555555 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Code blocks: force light background + dark text including syntax tokens */
+  .ProseMirror pre {
+    background: #f4f4f4 !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .ProseMirror pre,
+  .ProseMirror pre code,
+  .ProseMirror pre span {
+    color: #1a1a1a !important;
+  }
+
+  .ProseMirror code:not(pre code) {
+    background: #f0f0f0 !important;
+    color: #1a1a1a !important;
+  }
+}

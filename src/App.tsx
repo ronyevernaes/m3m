@@ -160,7 +160,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
-      <aside style={{ width: sidebarWidth }} className="flex-shrink-0 flex flex-col">
+      <aside style={{ width: sidebarWidth }} className="flex-shrink-0 flex flex-col print:hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <VaultSwitcher
             vaults={vaults}
@@ -214,7 +214,7 @@ export default function App() {
         )}
       </aside>
 
-      <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} />
+      <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} className="print:hidden" />
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {openTabs.length > 0 && (
@@ -227,6 +227,7 @@ export default function App() {
             activeTabPath={activeTabPath}
             onTabClick={switchTab}
             onTabClose={closeTab}
+            className="print:hidden"
           />
         )}
         <Editor onSettingsClick={() => setShowSettings(true)} />
@@ -234,8 +235,8 @@ export default function App() {
 
       {currentNote && (
         <>
-          <ResizeHandle side="right" initialWidth={contextPanelWidth} onResize={setContextPanelWidth} />
-          <ContextPanel onOpenNote={openNote} width={contextPanelWidth} />
+          <ResizeHandle side="right" initialWidth={contextPanelWidth} onResize={setContextPanelWidth} className="print:hidden" />
+          <ContextPanel onOpenNote={openNote} width={contextPanelWidth} className="print:hidden" />
         </>
       )}
 

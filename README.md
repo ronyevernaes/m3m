@@ -38,6 +38,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | In-app updates | Checks for new releases on launch; dismissable install banner |
 | Vault Manager | Create, open, switch, rename, remove vaults |
 | Note tabs | Multi-tab strip above the editor; each opened note is a separate tab; dirty indicator dot; Cmd+W closes the active tab; auto-saves dirty tabs on close and on app quit |
+| Export as PDF | "Export PDF" button in editor header; sets document title to note name for default filename; system print dialog via `window.print()`; print CSS hides all app chrome and forces light-mode colors |
 
 ### Planned (P0)
 

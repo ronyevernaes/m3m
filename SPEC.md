@@ -169,6 +169,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
     - ⬜ Daily note template — markdown template injected on creation; will differ heavily per vault type
     - ⬜ Note filename template — {slug}-{ulid} default, but many users expect date prefixes or title-only names
 - ✅ Note tabs — multi-tab editor strip; each opened note becomes a tab; `openTabs` in vault store caches full `Note` per tab; switching is instant (no disk read if already open); dirty indicator dot per tab; Cmd+W closes the active tab; dirty tabs auto-save on close and on app quit
+- ✅ Export as PDF — "Export PDF" button in the editor header; sets `document.title` to the note title so the browser uses it as the default PDF filename (`afterprint` restores previous title); `window.print()` opens the system print dialog; print CSS hides all app chrome (sidebar, resize handles, tabs, toolbar, context panel) via `print:hidden` and forces light-mode CSS variables; `@page { margin: 2.5cm 3cm }` sets document margins; requires `core:webview:allow-print` in `src-tauri/capabilities/default.json`
 - ✅ Resizable panels — sidebar and context panel widths are drag-resizable and persisted across sessions
 - ✅ In-app update notifications — `tauri-plugin-updater` checks for new releases on launch; dismissable banner guides user through install
 - ✅ Vault Manager — open, close, create, rename, remove vaults (see below)

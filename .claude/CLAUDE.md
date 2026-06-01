@@ -85,6 +85,8 @@ src/
 
 **Note deletion** — `delete_note` command removes the file on disk via `std::fs::remove_file`. The file watcher detects the Remove event and calls `indexer::remove_file()` to clean the notes table, FTS index, and outbound `note_links` from SQLite automatically. Frontend optimistically removes the note from the store and clears `currentNote` if it was open.
 
+**PDF export** — "Export PDF" button in the editor header calls `window.print()`. Before printing, `document.title` is set to the note title (browser uses this as the default PDF filename); the `afterprint` event restores the original title. Print layout is CSS-only: `@media print` in `src/index.css` hides all app chrome via `print:hidden` (sidebar `<aside>`, both `<ResizeHandle>`, `<TabBar>`, `<EditorToolbar>`, and `<ContextPanel>`), forces light-mode CSS variables (overrides dark-theme custom properties including syntax highlight token colors), and targets `[data-editor-print-content]` to remove scroll/height constraints. A print-only `<h1>` in `Editor.tsx` renders the note title; the live `<input>` and action buttons carry `print:hidden`. `@page { margin: 2.5cm 3cm }` (top-level in `src/index.css`, not inside `@media print`) sets page margins. Requires `core:webview:allow-print` in `src-tauri/capabilities/default.json`.
+
 **DevTools** — gated behind the `devtools` Cargo feature (`src-tauri/Cargo.toml`). The `tauri:dev` npm script passes `-- --features devtools` to enable right-click "Inspect Element" in development without auto-opening the panel. Production `tauri build` never passes the flag so the menu item is compiled out. Never add `devtools` to the default `[features]` or to the `tauri` dependency's feature list directly.
 
 ## Prompt conventions
