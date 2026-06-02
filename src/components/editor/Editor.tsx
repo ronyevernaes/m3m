@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { LinkExtension } from './extensions/LinkExtension'
 import { CollapsibleHeadingExtension } from './extensions/CollapsibleHeadingExtension'
+import { DragHandleExtension } from './extensions/DragHandleExtension'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
@@ -57,15 +58,16 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ codeBlock: false, heading: false }),
+      StarterKit.configure({ codeBlock: false, heading: false, dropcursor: false }),
       CollapsibleHeadingExtension,
+      DragHandleExtension,
       LinkExtension.configure({
         openOnClick: false,
         HTMLAttributes: { rel: 'noopener noreferrer', target: null },
       }),
       CodeBlockLowlight.configure({ lowlight }),
       TaskList,
-      TaskItem.configure({ nested: true }),
+      TaskItem.extend({ addNodeView() { return undefined as never } }).configure({ nested: true }),
       WikilinkExtension.configure({ onNavigate: openNote }),
     ],
     content: '',

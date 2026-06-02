@@ -312,6 +312,119 @@ code {
   display: none;
 }
 
+/* ── Drag handle — block wrappers ──────────────────────────────── */
+
+/* Extends hit-area into the editor's left padding gutter */
+.pm-block-wrapper {
+  position: relative;
+  margin-left: -24px;
+  padding-left: 24px;
+}
+
+/* Grip container — absolutely positioned in the gutter */
+.pm-block-actions {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.pm-block-wrapper:hover .pm-block-actions {
+  opacity: 0.5;
+}
+
+.pm-block-actions:hover {
+  opacity: 1 !important;
+}
+
+/* Grip button shared by block and list wrappers */
+.pm-drag-grip {
+  cursor: grab;
+  padding: 2px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+.pm-drag-grip:hover {
+  background: var(--muted, rgba(128, 128, 128, 0.15));
+}
+
+.pm-drag-grip:active {
+  cursor: grabbing;
+}
+
+/* ── Drag handle — list item wrappers ──────────────────────────── */
+
+.pm-list-item-wrapper {
+  position: relative;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+/* Grip absolutely positioned to the left of list indent */
+.pm-list-actions {
+  position: absolute;
+  left: -20px;
+  top: 3px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.pm-list-item-wrapper:hover .pm-list-actions {
+  opacity: 0.5;
+}
+
+.pm-list-actions:hover {
+  opacity: 1 !important;
+}
+
+/* Bullet / ordered number rendered as a real element (frees ::before for indicator) */
+.pm-list-marker {
+  flex-shrink: 0;
+  user-select: none;
+  min-width: 1.2em;
+  text-align: right;
+}
+
+/* ── Drop position indicators ──────────────────────────────────── */
+
+.pm-drop-before::before,
+.pm-drop-after::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent, #6366f1);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pm-drop-before::before { top: -1px; }
+.pm-drop-after::after   { bottom: -1px; }
+
+/* List item indicators extend left into the list gutter */
+.pm-list-item-wrapper.pm-drop-before::before { left: -20px; }
+.pm-list-item-wrapper.pm-drop-after::after   { left: -20px; }
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
@@ -328,30 +441,23 @@ code {
   font-size: inherit;
 }
 
-/* TipTap task list */
+/* TipTap task list — our NodeView replaces the React NodeView so the structure
+   is now li.pm-list-item-wrapper > [grip] > label > checkbox + div (contentDOM) */
 .ProseMirror ul[data-type='taskList'] {
   list-style: none !important;
   padding-left: 0 !important;
   margin-left: 0 !important;
 }
 
-.ProseMirror ul[data-type='taskList'] > li {
-  display: flex !important;
+/* Task items use flex-start to align checkbox at the top */
+.ProseMirror ul[data-type='taskList'] > li.pm-list-item-wrapper {
   align-items: flex-start !important;
   gap: 0.5rem;
-  padding-left: 0 !important;
 }
 
-.ProseMirror ul[data-type='taskList'] > li::before,
-.ProseMirror ul[data-type='taskList'] > li::marker {
-  display: none !important;
-  content: none !important;
-}
-
-.ProseMirror ul[data-type='taskList'] > li > label {
-  flex-shrink: 0;
-  margin-top: 0.25em;
-  line-height: 1;
+/* Suppress the bullet marker on task items (checkbox is the marker) */
+.ProseMirror ul[data-type='taskList'] > li.pm-list-item-wrapper > .pm-list-marker {
+  display: none;
 }
 
 .ProseMirror ul[data-type='taskList'] > li > label input[type='checkbox'] {
@@ -458,6 +564,22 @@ code {
 
   .pm-section-hidden {
     display: block !important;
+  }
+
+  /* Hide drag UI in print */
+  .pm-block-actions,
+  .pm-list-actions {
+    display: none !important;
+  }
+
+  .pm-block-wrapper {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .pm-drop-before::before,
+  .pm-drop-after::after {
+    display: none !important;
   }
 
   /* Code blocks: force light background + dark text including syntax tokens */
