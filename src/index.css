@@ -312,6 +312,136 @@ code {
   display: none;
 }
 
+/* ── Drag handle — block-level wrappers ────────────────────────── */
+
+.pm-block-wrapper {
+  position: relative;
+  /* Extend hit-area left into the editor's p-6 padding gutter */
+  margin-left: -24px;
+  padding-left: 24px;
+}
+
+.pm-block-actions {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.pm-block-wrapper:hover .pm-block-actions {
+  opacity: 0.5;
+}
+
+.pm-block-actions:hover {
+  opacity: 1 !important;
+}
+
+.pm-drag-grip {
+  cursor: grab;
+  padding: 2px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: inherit;
+  background: transparent;
+  border: none;
+}
+
+.pm-drag-grip:hover {
+  background: var(--muted, rgba(128, 128, 128, 0.15));
+}
+
+.pm-drag-grip:active {
+  cursor: grabbing;
+}
+
+.pm-collapse-btn {
+  background: transparent;
+  border: none;
+}
+
+.pm-collapse-btn:hover {
+  background: var(--muted, rgba(128, 128, 128, 0.15));
+}
+
+/* ── Drag handle — list item wrappers ──────────────────────────── */
+
+.pm-list-item-wrapper {
+  position: relative;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.pm-list-actions {
+  position: absolute;
+  left: -20px;
+  top: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.pm-list-item-wrapper:hover .pm-list-actions {
+  opacity: 0.5;
+}
+
+.pm-list-actions:hover {
+  opacity: 1 !important;
+}
+
+.pm-list-marker {
+  flex-shrink: 0;
+  user-select: none;
+  color: inherit;
+  min-width: 1.2em;
+  text-align: right;
+}
+
+/* ── Drop position indicators ──────────────────────────────────── */
+
+.pm-drop-before::before,
+.pm-drop-after::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent, #3b82f6);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pm-drop-before::before {
+  top: -1px;
+}
+
+.pm-drop-after::after {
+  bottom: -1px;
+}
+
+/* List item indicators extend into the left gutter to be visible */
+.pm-list-item-wrapper.pm-drop-before::before {
+  left: -20px;
+}
+
+.pm-list-item-wrapper.pm-drop-after::after {
+  left: -20px;
+}
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
@@ -335,35 +465,15 @@ code {
   margin-left: 0 !important;
 }
 
-.ProseMirror ul[data-type='taskList'] > li {
-  display: flex !important;
+/* taskItem NodeView renders .pm-list-item-wrapper — use flex-start for checkbox alignment */
+.ProseMirror ul[data-type='taskList'] > li.pm-list-item-wrapper {
   align-items: flex-start !important;
   gap: 0.5rem;
-  padding-left: 0 !important;
 }
 
-.ProseMirror ul[data-type='taskList'] > li::before,
-.ProseMirror ul[data-type='taskList'] > li::marker {
-  display: none !important;
-  content: none !important;
-}
-
-.ProseMirror ul[data-type='taskList'] > li > label {
-  flex-shrink: 0;
-  margin-top: 0.25em;
-  line-height: 1;
-}
-
-.ProseMirror ul[data-type='taskList'] > li > label input[type='checkbox'] {
-  cursor: pointer;
-  margin: 0;
-  width: 1.1rem;
-  height: 1.1rem;
-}
-
-.ProseMirror ul[data-type='taskList'] > li > div {
-  flex: 1;
-  min-width: 0;
+/* ::marker suppressed via list-style: none on .pm-list-item-wrapper */
+.ProseMirror ul[data-type='taskList'] > li.pm-list-item-wrapper > .pm-list-marker {
+  display: none;
 }
 
 .ProseMirror ul[data-type='taskList'] > li > div > p {
@@ -458,6 +568,21 @@ code {
 
   .pm-section-hidden {
     display: block !important;
+  }
+
+  .pm-block-actions,
+  .pm-list-actions {
+    display: none !important;
+  }
+
+  .pm-block-wrapper {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .pm-drop-before::before,
+  .pm-drop-after::after {
+    display: none !important;
   }
 
   /* Code blocks: force light background + dark text including syntax tokens */
