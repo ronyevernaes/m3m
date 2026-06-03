@@ -1,19 +1,19 @@
 import { Node, mergeAttributes } from '@tiptap/core';
-import type { NodeViewRendererProps } from '@tiptap/core';
+import type { Editor, NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import type { Node as PmNode } from '@tiptap/pm/model';
 import { useUiStore } from '../../../store/ui';
 
-const pluginKey = new PluginKey('collapsibleHeading');
+export const pluginKey = new PluginKey('collapsibleHeading');
 
-type CollapsibleStorage = { collapsedSections: Set<string>; noteId: string };
+export type CollapsibleStorage = { collapsedSections: Set<string>; noteId: string };
 
 export function makeSectionKey(level: number, text: string, occurrenceIndex: number): string {
   return `${level}:${text}:${occurrenceIndex}`;
 }
 
-type Section = { key: string; contentFrom: number; contentTo: number };
+export type Section = { key: string; headingPos: number; contentFrom: number; contentTo: number };
 
 export function findSections(doc: PmNode): Section[] {
   const headings: Array<{ level: number; text: string; from: number; to: number }> = [];
@@ -46,7 +46,12 @@ export function findSections(doc: PmNode): Section[] {
       }
     }
 
-    sections.push({ key: makeSectionKey(h.level, h.text, idx), contentFrom: h.to, contentTo });
+    sections.push({
+      key: makeSectionKey(h.level, h.text, idx),
+      headingPos: h.from,
+      contentFrom: h.to,
+      contentTo,
+    });
   }
 
   return sections;
@@ -60,6 +65,8 @@ function buildDecorations(doc: PmNode, collapsed: Set<string>): DecorationSet {
 
   for (const section of sections) {
     if (!collapsed.has(section.key)) continue;
+    const headingSize = section.contentFrom - section.headingPos;
+    decos.push(Decoration.node(section.headingPos, section.headingPos + headingSize, { class: 'heading-is-collapsed' }));
     doc.forEach((node, offset) => {
       if (offset >= section.contentFrom && offset + node.nodeSize <= section.contentTo) {
         decos.push(Decoration.node(offset, offset + node.nodeSize, { class: 'pm-section-hidden' }));
@@ -70,98 +77,66 @@ function buildDecorations(doc: PmNode, collapsed: Set<string>): DecorationSet {
   return DecorationSet.create(doc, decos);
 }
 
-// Chevron SVG — down when expanded, rotated -90° when collapsed
-const CHEVRON_SVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 3l4 4 4-4"/></svg>`;
-
-function createNodeView(props: NodeViewRendererProps, storage: CollapsibleStorage) {
-  const { node: initialNode, getPos, editor: tiptapEditor } = props;
+function createNodeView(
+  props: NodeViewRendererProps,
+  storage: CollapsibleStorage,
+  getEditor: () => Editor,
+) {
+  const { node: initialNode } = props;
   const level = initialNode.attrs.level as number;
-  let currentNode = initialNode;
 
-  // --- DOM structure ---
   const dom = document.createElement(`h${level}`);
-  dom.className = 'flex items-center gap-1.5 group/heading';
+  dom.className = 'relative';
 
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.setAttribute('contenteditable', 'false');
-  button.className =
-    'flex-shrink-0 opacity-0 group-hover/heading:opacity-100 transition-opacity duration-150 p-0.5 rounded text-foreground/40 hover:text-foreground hover:bg-muted';
-  button.innerHTML = CHEVRON_SVG;
-  const chevron = button.querySelector('svg') as SVGElement;
-  chevron.style.transition = 'transform 150ms';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Toggle section');
+  btn.className =
+    'heading-chevron absolute -left-6 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded text-foreground/40 hover:text-foreground hover:bg-muted';
 
-  const contentDOM = document.createElement('span');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '12');
+  svg.setAttribute('height', '12');
+  svg.setAttribute('viewBox', '0 0 10 10');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.5');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
 
-  dom.appendChild(button);
-  dom.appendChild(contentDOM);
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M1 3l4 4 4-4');
+  svg.appendChild(path);
+  btn.appendChild(svg);
 
-  // --- Section key ---
-  const computeKey = (): string => {
-    if (typeof getPos !== 'function') return '';
-    const pos = getPos();
-    if (pos === undefined) return '';
-    const doc = tiptapEditor.state.doc;
-    const text = currentNode.textContent;
-    let idx = 0;
-    doc.forEach((n, offset) => {
-      if (
-        offset < pos &&
-        n.type.name === 'heading' &&
-        n.attrs.level === level &&
-        n.textContent === text
-      ) {
-        idx++;
-      }
-    });
-    return makeSectionKey(level, text, idx);
-  };
-
-  let currentKey = computeKey();
-
-  // --- Visual sync ---
-  const syncVisual = () => {
-    const isCollapsed = Boolean(currentKey) && storage.collapsedSections.has(currentKey);
-    chevron.style.transform = isCollapsed ? 'rotate(-90deg)' : '';
-    button.setAttribute('aria-label', isCollapsed ? 'Expand section' : 'Collapse section');
-  };
-  syncVisual();
-
-  // --- Toggle on click ---
-  button.addEventListener('click', (e) => {
+  btn.addEventListener('mousedown', (e) => e.preventDefault());
+  btn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!currentKey) return;
-    if (storage.collapsedSections.has(currentKey)) {
-      storage.collapsedSections.delete(currentKey);
+    const editor = getEditor();
+    const pos = props.getPos();
+    if (pos === undefined) return;
+    const section = findSections(editor.state.doc).find((s) => s.headingPos === pos);
+    if (!section) return;
+    if (storage.collapsedSections.has(section.key)) {
+      storage.collapsedSections.delete(section.key);
     } else {
-      storage.collapsedSections.add(currentKey);
+      storage.collapsedSections.add(section.key);
     }
-    syncVisual();
-    tiptapEditor.view.dispatch(tiptapEditor.view.state.tr.setMeta('rebuildDecorations', true));
-    useUiStore.getState().toggleSectionCollapsed(storage.noteId, currentKey);
+    useUiStore.getState().toggleSectionCollapsed(storage.noteId, section.key);
+    editor.view.dispatch(editor.view.state.tr.setMeta(pluginKey, 'rebuildDecorations'));
   });
 
-  // Subscribe to store so chevron updates when another note's state is loaded
-  const unsubscribe = useUiStore.subscribe(() => syncVisual());
+  const contentDOM = document.createElement('span');
+  dom.appendChild(btn);
+  dom.appendChild(contentDOM);
 
   return {
     dom,
     contentDOM,
     update(updatedNode: PmNode) {
-      if (updatedNode.type.name !== 'heading' || (updatedNode.attrs.level as number) !== level) {
-        return false;
-      }
-      currentNode = updatedNode;
-      currentKey = computeKey();
-      syncVisual();
-      return true;
-    },
-    ignoreMutation(mutation: MutationRecord) {
-      return button.contains(mutation.target as Node) || mutation.target === button;
-    },
-    destroy() {
-      unsubscribe();
+      return updatedNode.type.name === 'heading' && (updatedNode.attrs.level as number) === level;
     },
   };
 }
@@ -199,7 +174,8 @@ export const CollapsibleHeadingExtension = Node.create({
 
   addNodeView() {
     const storage = this.storage as CollapsibleStorage;
-    return (props: NodeViewRendererProps) => createNodeView(props, storage);
+    const getEditor = () => this.editor;
+    return (props: NodeViewRendererProps) => createNodeView(props, storage, getEditor);
   },
 
   addStorage() {
@@ -219,7 +195,7 @@ export const CollapsibleHeadingExtension = Node.create({
             return buildDecorations(state.doc, storage.collapsedSections);
           },
           apply(tr, old, _oldState, newState) {
-            if (tr.docChanged || tr.getMeta('rebuildDecorations')) {
+            if (tr.docChanged || tr.getMeta(pluginKey)) {
               return buildDecorations(newState.doc, storage.collapsedSections);
             }
             return old.map(tr.mapping, newState.doc);

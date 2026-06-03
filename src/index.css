@@ -312,6 +312,13 @@ code {
   display: none;
 }
 
+.ProseMirror .heading-chevron svg {
+  transition: transform 0.15s;
+}
+.ProseMirror .heading-is-collapsed > .heading-chevron svg {
+  transform: rotate(-90deg);
+}
+
 .ProseMirror pre {
   background: var(--code-bg) !important;
   color: var(--text-h) !important;
@@ -458,6 +465,10 @@ code {
 
   .pm-section-hidden {
     display: block !important;
+  }
+
+  .heading-chevron {
+    display: none;
   }
 
   /* Code blocks: force light background + dark text including syntax tokens */

@@ -14,6 +14,7 @@ import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown'
 import { WikilinkExtension } from './extensions/WikilinkExtension'
 import { EditorToolbar } from './EditorToolbar'
 import { LinkTooltip } from './LinkTooltip'
+import { NodeActionsPanel } from './node-actions/NodeActionsPanel'
 import { openUrl } from '../../lib/ipc'
 import { Button } from '../ui/Button'
 import { GearIcon } from '../icons/GearIcon'
@@ -38,6 +39,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
   } = useVault()
   const suppressUpdate = useRef(false)
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [editorMounted, setEditorMounted] = useState(false)
   const [showSaved, setShowSaved] = useState(false)
   const savedFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const prevIsDirty = useRef(isDirty)
@@ -69,6 +71,8 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       WikilinkExtension.configure({ onNavigate: openNote }),
     ],
     content: '',
+    onCreate() { setEditorMounted(true) },
+    onDestroy() { setEditorMounted(false) },
     editorProps: {
       attributes: {
         class: 'prose prose-neutral max-w-none focus:outline-none min-h-full p-6',
@@ -251,6 +255,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
         </div>
       )}
       {editor && <LinkTooltip editor={editor} />}
+      {editor && editorMounted && <NodeActionsPanel editor={editor} />}
 
       {currentNote && (
         <div className="flex-1 overflow-y-auto" data-editor-print-content>
