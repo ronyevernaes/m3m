@@ -43,6 +43,12 @@ const SECTIONS = [
       { syntax: '- [x] done', description: 'Task (checked)' },
     ],
   },
+  {
+    title: 'Tables',
+    rows: [
+      { syntax: '| A | B |\n| - | - |\n| 1 | 2 |', description: 'Table (GFM pipe syntax)' },
+    ],
+  },
 ];
 
 export function MarkdownHelpDialog({ onClose }: MarkdownHelpDialogProps) {

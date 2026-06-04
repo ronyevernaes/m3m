@@ -367,6 +367,10 @@ code {
   display: none;
 }
 
+.ProseMirror .selectedCell {
+  background-color: var(--accent-subtle);
+}
+
 .ProseMirror .heading-chevron svg {
   transition: transform 0.15s;
 }

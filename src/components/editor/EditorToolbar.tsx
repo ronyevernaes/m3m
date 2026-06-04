@@ -39,6 +39,7 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
     { label: '```', onClick: () => editor.chain().focus().toggleCodeBlock().run(), isActive: () => editor.isActive('codeBlock') },
     { label: '☐ List', onClick: () => editor.chain().focus().toggleTaskList().run(), isActive: () => editor.isActive('taskList') },
     { label: '>', onClick: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive('blockquote') },
+    { label: 'Table', onClick: () => editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run(), isActive: () => editor.isActive('table') },
   ];
 
   const handleLinkButtonClick = () => {

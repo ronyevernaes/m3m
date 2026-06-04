@@ -21,6 +21,9 @@ import type {
   InlineCode,
   Link,
   Delete,
+  Table,
+  TableRow,
+  TableCell,
 } from 'mdast';
 
 interface WikilinkMdastNode {
@@ -162,6 +165,27 @@ function mdastNodeToTipTap(node: Content): JSONContent | JSONContent[] | null {
     case 'thematicBreak': {
       return { type: 'horizontalRule' };
     }
+    case 'table': {
+      const t = node as Table;
+      return {
+        type: 'table',
+        content: t.children.map((row, rowIndex) => {
+          const tr = row as TableRow;
+          return {
+            type: 'tableRow',
+            content: tr.children.map((cell) => {
+              const tc = cell as TableCell;
+              const inline = flattenInline(tc.children as (PhrasingContent | WikilinkMdastNode)[]);
+              return {
+                type: rowIndex === 0 ? 'tableHeader' : 'tableCell',
+                attrs: { colspan: 1, rowspan: 1, colwidth: null },
+                content: [{ type: 'paragraph', content: inline.length ? inline : undefined }],
+              };
+            }),
+          };
+        }),
+      };
+    }
     default:
       return null;
   }
@@ -292,6 +316,18 @@ function tiptapNodeToMdast(node: JSONContent): Content | null {
       } as List;
     case 'horizontalRule':
       return { type: 'thematicBreak' } as ThematicBreak;
+    case 'table':
+      return {
+        type: 'table',
+        align: [],
+        children: children.map((row) => ({
+          type: 'tableRow',
+          children: (row.content ?? []).map((cell) => ({
+            type: 'tableCell',
+            children: inlineToMdast((cell.content ?? []).flatMap((para) => para.content ?? [])),
+          })),
+        })),
+      } as Table;
     default:
       return null;
   }

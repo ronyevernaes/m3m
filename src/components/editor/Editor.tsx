@@ -5,6 +5,7 @@ import { CollapsibleHeadingExtension } from './extensions/CollapsibleHeadingExte
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import { createLowlight, all } from 'lowlight'
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useVault } from '../../hooks/useVault'
@@ -69,6 +70,10 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       TaskList,
       TaskItem.configure({ nested: true }),
       WikilinkExtension.configure({ onNavigate: openNote }),
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     content: '',
     onCreate() { setEditorMounted(true) },

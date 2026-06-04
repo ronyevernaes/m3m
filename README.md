@@ -39,7 +39,8 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Vault Manager | Create, open, switch, rename, remove vaults |
 | Note tabs | Multi-tab strip above the editor; each opened note is a separate tab; dirty indicator dot; Cmd+W closes the active tab; auto-saves dirty tabs on close and on app quit |
 | Export as PDF | "Export PDF" button in editor header; sets document title to note name for default filename; system print dialog via `window.print()`; print CSS hides all app chrome and forces light-mode colors |
-| Markdown reference | `?` button at the far right of the editor toolbar opens a modal listing all supported Markdown syntax: inline formatting, headings, blocks, lists, and wikilinks; Escape or backdrop click closes it |
+| Markdown tables | GFM pipe-table syntax (`| A | B |` / `| - | - |`); full round-trip serialization via remark-gfm; "Table" toolbar button inserts a 2×2 table with a header row; Tab navigates between cells |
+| Markdown reference | `?` button at the far right of the editor toolbar opens a modal listing all supported Markdown syntax: inline formatting, headings, blocks, lists, tables, and wikilinks; Escape or backdrop click closes it |
 
 ### Planned (P0)
 
