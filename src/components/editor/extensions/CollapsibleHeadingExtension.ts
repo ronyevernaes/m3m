@@ -1,4 +1,4 @@
-import { Node, mergeAttributes } from '@tiptap/core';
+import { Node, mergeAttributes, textblockTypeInputRule } from '@tiptap/core';
 import type { Editor, NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
@@ -183,6 +183,43 @@ export const CollapsibleHeadingExtension = Node.create({
       collapsedSections: new Set<string>(),
       noteId: '',
     };
+  },
+
+  addCommands() {
+    return {
+      setHeading:
+        (attributes: { level: number }) =>
+        ({ commands }: { commands: Record<string, (...args: unknown[]) => boolean> }) => {
+          if (!(this.options.levels as number[]).includes(attributes.level)) return false;
+          return commands.setNode(this.name, attributes);
+        },
+      toggleHeading:
+        (attributes: { level: number }) =>
+        ({ commands }: { commands: Record<string, (...args: unknown[]) => boolean> }) => {
+          if (!(this.options.levels as number[]).includes(attributes.level)) return false;
+          return commands.toggleNode(this.name, 'paragraph', attributes);
+        },
+    };
+  },
+
+  addKeyboardShortcuts() {
+    return (this.options.levels as number[]).reduce(
+      (acc: Record<string, () => boolean>, level: number) => {
+        acc[`Mod-Alt-${level}`] = () => this.editor.commands.toggleHeading({ level });
+        return acc;
+      },
+      {},
+    );
+  },
+
+  addInputRules() {
+    return (this.options.levels as number[]).map((level: number) =>
+      textblockTypeInputRule({
+        find: new RegExp(`^(#{1,${level}})\\s$`),
+        type: this.type,
+        getAttributes: { level },
+      }),
+    );
   },
 
   addProseMirrorPlugins() {
