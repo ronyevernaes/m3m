@@ -13,6 +13,7 @@ import { useVaultSettingsStore } from '../../store/vaultSettings'
 import { useUiStore } from '../../store/ui'
 import { markdownToTipTap, tipTapToMarkdown } from '../../lib/markdown'
 import { WikilinkExtension } from './extensions/WikilinkExtension'
+import { MarkdownPasteExtension } from './extensions/MarkdownPasteExtension'
 import { EditorToolbar } from './EditorToolbar'
 import { LinkTooltip } from './LinkTooltip'
 import { NodeActionsPanel } from './node-actions/NodeActionsPanel'
@@ -74,6 +75,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       TableRow,
       TableHeader,
       TableCell,
+      MarkdownPasteExtension,
     ],
     content: '',
     onCreate() { setEditorMounted(true) },
