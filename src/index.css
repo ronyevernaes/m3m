@@ -290,6 +290,18 @@ code {
   color: var(--text);
 }
 
+.ProseMirror strong,
+.ProseMirror b {
+  font-weight: 700;
+  color: inherit;
+}
+
+.ProseMirror em,
+.ProseMirror i {
+  font-style: italic;
+  color: inherit;
+}
+
 .ProseMirror a {
   color: color-mix(in oklch, var(--accent) 60%, var(--text));
   text-decoration: underline;
@@ -306,6 +318,49 @@ code {
   margin-left: 0;
   color: color-mix(in oklch, var(--text) 70%, var(--bg));
   font-style: italic;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  font-family: var(--heading);
+  font-weight: 600;
+  color: var(--text-h);
+  line-height: 1.25;
+  margin: 1.25em 0 0.25em;
+}
+
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  letter-spacing: -0.015em;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25em;
+  letter-spacing: -0.01em;
+}
+
+.ProseMirror h4 {
+  font-size: 1.1em;
+}
+
+.ProseMirror h5 {
+  font-size: 1em;
+}
+
+.ProseMirror h6 {
+  font-size: 0.9em;
+  color: color-mix(in oklch, var(--text-h) 70%, var(--text));
 }
 
 .pm-section-hidden {

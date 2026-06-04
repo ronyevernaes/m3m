@@ -377,3 +377,4 @@ notify watcher → index → AI pipeline
 
 - Google Fonts `@import` requires internet. For fully offline production Tauri builds, bundle fonts via `@font-face` pointing at local files and remove the `@import`.
 - DevTools are gated behind a Cargo feature (`devtools = ["tauri/devtools"]` in `src-tauri/Cargo.toml`). The `tauri:dev` script passes `-- --features devtools` so right-click "Inspect Element" is available in development. Production builds omit the flag — the menu item is compiled out entirely. Never add `devtools` to the default feature set.
+- Tailwind v4 preflight resets `strong`/`b` and `em`/`i` to inherit, stripping browser bold/italic defaults. Explicit `.ProseMirror strong`, `.ProseMirror b`, `.ProseMirror em`, `.ProseMirror i` rules with `color: inherit` in `src/index.css` are required to restore correct inline mark rendering, including proper dark-mode colors.
