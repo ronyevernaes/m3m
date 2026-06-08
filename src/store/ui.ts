@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ContextPanelTab = 'details' | 'links' | 'backlinks' | 'insights' | 'agent';
+export type ContextPanelTab = 'details' | 'links' | 'insights' | 'agent';
 
 const PANEL_MIN = 180;
 const PANEL_MAX = 480;

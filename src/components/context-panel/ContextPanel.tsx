@@ -3,8 +3,7 @@ import { useVaultStore } from '../../store/vault';
 import { cn } from '../../lib/cn';
 import { ContextPanelTabs } from './ContextPanelTabs';
 import { DetailsTab } from './DetailsTab';
-import { LinksTab } from './LinksTab';
-import { BacklinksTab } from './BacklinksTab';
+import { LinksAndBacklinksTab } from './LinksAndBacklinksTab';
 import { InsightsTab } from './InsightsTab';
 import { AgentTab } from './AgentTab';
 
@@ -20,14 +19,16 @@ export function ContextPanel({ onOpenNote, width = 256, className }: ContextPane
 
   if (!currentNote) return null;
 
+  // Migrate users who have the removed 'backlinks' tab persisted in localStorage
+  const activeTab = (contextPanelTab as string) === 'backlinks' ? 'links' : contextPanelTab;
+
   return (
     <div data-tour="context-panel" className={cn('flex flex-col flex-shrink-0', className)} style={{ width }}>
-      <ContextPanelTabs activeTab={contextPanelTab} onTabChange={setContextPanelTab} />
-      {contextPanelTab === 'details' && <DetailsTab />}
-      {contextPanelTab === 'links' && <LinksTab onOpenNote={onOpenNote} />}
-      {contextPanelTab === 'backlinks' && <BacklinksTab onOpenNote={onOpenNote} />}
-      {contextPanelTab === 'insights' && <InsightsTab />}
-      {contextPanelTab === 'agent' && <AgentTab />}
+      <ContextPanelTabs activeTab={activeTab} onTabChange={setContextPanelTab} />
+      {activeTab === 'details' && <DetailsTab />}
+      {activeTab === 'links' && <LinksAndBacklinksTab onOpenNote={onOpenNote} />}
+      {activeTab === 'insights' && <InsightsTab />}
+      {activeTab === 'agent' && <AgentTab />}
     </div>
   );
 }
