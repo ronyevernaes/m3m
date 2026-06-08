@@ -42,6 +42,7 @@ export function VaultSwitcher({
   return (
     <div ref={wrapperRef} className="relative flex items-center min-w-0">
       <button
+        data-tour="vault-switcher"
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-accent transition-colors min-w-0"
         title="Switch vault (⌘⇧V)"

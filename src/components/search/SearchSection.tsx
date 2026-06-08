@@ -20,6 +20,7 @@ export function SearchSection({ query, onChange, notes, className }: SearchSecti
       <div className="flex items-center gap-1 px-3 py-2">
         <SearchBar query={query} onChange={onChange} className="flex-1 p-0" />
         <button
+          data-tour="advanced-search-toggle"
           type="button"
           onClick={() => setAdvancedSearchOpen(!advancedSearchOpen)}
           aria-label="Toggle advanced search"

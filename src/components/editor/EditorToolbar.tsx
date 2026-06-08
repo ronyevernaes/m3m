@@ -64,7 +64,7 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
   };
 
   return (
-    <div className={cn('flex flex-wrap items-center gap-1 border-b border-border px-3 py-1', className)}>
+    <div data-tour="editor-toolbar" className={cn('flex flex-wrap items-center gap-1 border-b border-border px-3 py-1', className)}>
       {buttons.map((btn) => (
         <Button
           key={btn.label}
@@ -112,6 +112,7 @@ export function EditorToolbar({ editor, className }: ToolbarProps) {
       )}
 
       <Button
+        data-tour="markdown-help"
         intent="ghost"
         size="sm"
         onClick={() => setShowHelp(true)}

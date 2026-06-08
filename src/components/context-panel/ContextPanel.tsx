@@ -21,7 +21,7 @@ export function ContextPanel({ onOpenNote, width = 256, className }: ContextPane
   if (!currentNote) return null;
 
   return (
-    <div className={cn('flex flex-col flex-shrink-0', className)} style={{ width }}>
+    <div data-tour="context-panel" className={cn('flex flex-col flex-shrink-0', className)} style={{ width }}>
       <ContextPanelTabs activeTab={contextPanelTab} onTabChange={setContextPanelTab} />
       {contextPanelTab === 'details' && <DetailsTab />}
       {contextPanelTab === 'links' && <LinksTab onOpenNote={onOpenNote} />}

@@ -176,6 +176,7 @@ CREATE INDEX idx_note_links_target ON note_links (target_id);
 - ✅ Resizable panels — sidebar and context panel widths are drag-resizable and persisted across sessions
 - ✅ In-app update notifications — `tauri-plugin-updater` checks for new releases on launch; dismissable banner guides user through install
 - ✅ Vault Manager — open, close, create, rename, remove vaults (see below)
+- ✅ Onboarding tours — driver.js (npm, bundled offline); two versioned tours: `general-onboarding-v1` fires the first time the vault view opens (triggered in `App.tsx` on `vaultPath` change via `requestAnimationFrame`), `editor-onboarding-v1` fires the first time the user creates a note (detected via `justCreatedNoteRef` in `App.tsx`); tour steps are filtered at fire time to only mounted DOM targets so steps for unmounted elements are skipped silently; completion persisted in `useUiStore.completedTours: string[]` under `m3m-ui` localStorage key; tour ID is a versioned string — bumping it re-triggers for all users; popovers themed via `.driver-m3m-popover` CSS class using project CSS variable tokens (`--bg`, `--text-h`, `--accent`, etc.), z-index 9998–10000 overrides all existing modals (z-50); tour definitions and driver factories in `src/lib/tours.ts`; hook in `src/hooks/useTour.ts`; targets identified by `data-tour` attributes; restart via Settings → App → Help → "Take the tour"
 
 ### P1 — AI (requires Ollama or API key)
 

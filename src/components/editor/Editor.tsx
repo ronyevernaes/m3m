@@ -238,6 +238,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
           )}
           {onSettingsClick && (
             <button
+              data-tour="settings-button"
               type="button"
               onClick={onSettingsClick}
               aria-label="Open settings"
@@ -265,7 +266,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
       {editor && editorMounted && <NodeActionsPanel editor={editor} />}
 
       {currentNote && (
-        <div className="flex-1 overflow-y-auto" data-editor-print-content>
+        <div data-tour="editor-area" className="flex-1 overflow-y-auto" data-editor-print-content>
           <EditorContent editor={editor} className="h-full" />
         </div>
       )}

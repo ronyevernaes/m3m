@@ -436,6 +436,64 @@ code {
   margin: 0 !important;
 }
 
+/* ── driver.js tour popovers ────────────────────────────────────────
+   Scoped under .driver-m3m-popover to avoid Tailwind v4 preflight
+   interference with the .ProseMirror scope. */
+.driver-m3m-popover {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  font-family: var(--sans);
+}
+.driver-m3m-popover .driver-popover-title {
+  color: var(--text-h);
+  font-family: var(--heading);
+  font-weight: 600;
+}
+.driver-m3m-popover .driver-popover-description {
+  color: var(--text);
+}
+.driver-m3m-popover .driver-popover-progress-text {
+  color: var(--text);
+}
+.driver-m3m-popover .driver-popover-footer button {
+  color: var(--text-h);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.driver-m3m-popover .driver-popover-footer button:hover {
+  background: var(--border);
+}
+.driver-m3m-popover .driver-popover-next-btn {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+.driver-m3m-popover .driver-popover-next-btn:hover {
+  opacity: 0.9;
+  background: var(--accent) !important;
+}
+/* Arrow triangle — match popover background so it reads correctly in both themes */
+.driver-m3m-popover .driver-popover-arrow-side-left   { border-left-color:   var(--bg); }
+.driver-m3m-popover .driver-popover-arrow-side-right  { border-right-color:  var(--bg); }
+.driver-m3m-popover .driver-popover-arrow-side-top    { border-top-color:    var(--bg); }
+.driver-m3m-popover .driver-popover-arrow-side-bottom { border-bottom-color: var(--bg); }
+/* Close button — readable in both themes */
+.driver-m3m-popover .driver-popover-close-btn { color: var(--text); }
+.driver-m3m-popover .driver-popover-close-btn:hover,
+.driver-m3m-popover .driver-popover-close-btn:focus { color: var(--text-h); }
+/* Z-index: must beat z-50 (all existing modals use Tailwind z-50 = 50) */
+.driver-overlay { z-index: 9998 !important; }
+.driver-active-element,
+*[class*='driver-highlighted'] { z-index: 9999 !important; }
+.driver-popover { z-index: 10000 !important; }
+
 @page {
   margin: 2.5cm 3cm;
 }
@@ -528,6 +586,11 @@ code {
 
   .heading-chevron {
     display: none;
+  }
+
+  .driver-popover,
+  .driver-overlay {
+    display: none !important;
   }
 
   /* Code blocks: force light background + dark text including syntax tokens */

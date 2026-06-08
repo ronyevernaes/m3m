@@ -33,6 +33,7 @@ export function SearchBar({ query, onChange, className }: SearchBarProps) {
     <div className={cn('px-3 py-2', className)}>
       <div className="relative">
         <input
+          data-tour="search-input"
           ref={inputRef}
           type="text"
           value={query}

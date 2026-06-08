@@ -22,6 +22,8 @@ import { useVaultStore } from './store/vault';
 import { useSettingsStore } from './store/settings';
 import { useVaultSettingsStore } from './store/vaultSettings';
 import { FONT_SIZE_PX, FONT_FAMILY_CSS } from './types/settings';
+import { useTour } from './hooks/useTour';
+import { ONBOARDING_TOUR_ID, EDITOR_TOUR_ID } from './lib/tours';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
@@ -38,7 +40,8 @@ export default function App() {
     removeVaultEntry,
     revealVaultEntry,
   } = useVaultRegistry();
-  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth } = useUiStore();
+  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth, completedTours } = useUiStore();
+  const { startTour } = useTour();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
   const { update, isInstalling, dismissed, install, dismiss } = useUpdater();
@@ -61,6 +64,8 @@ export default function App() {
     const timer = setTimeout(() => search(searchQuery), 200);
     return () => clearTimeout(timer);
   }, [searchQuery, search, clearSearch]);
+
+  const justCreatedNoteRef = useRef(false);
 
   const saveAllDirtyTabsRef = useRef(saveAllDirtyTabs);
   useEffect(() => { saveAllDirtyTabsRef.current = saveAllDirtyTabs; }, [saveAllDirtyTabs]);
@@ -148,6 +153,27 @@ export default function App() {
     }
   }, [vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Fire the onboarding tour once, on first vault view open.
+  useEffect(() => {
+    if (!vaultPath) return;
+    if (completedTours.includes(ONBOARDING_TOUR_ID)) return;
+    requestAnimationFrame(() => {
+      if (!document.querySelector('[data-tour="vault-switcher"]')) return;
+      startTour(ONBOARDING_TOUR_ID);
+    });
+  }, [vaultPath]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fire the editor tour once, immediately after the user creates their first note.
+  useEffect(() => {
+    if (!currentNote || !justCreatedNoteRef.current) return;
+    justCreatedNoteRef.current = false;
+    if (completedTours.includes(EDITOR_TOUR_ID)) return;
+    requestAnimationFrame(() => {
+      if (!document.querySelector('[data-tour="editor-toolbar"]')) return;
+      startTour(EDITOR_TOUR_ID);
+    });
+  }, [currentNote]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // First launch: no vaults registered.
   if (!registryLoading && vaults.length === 0) {
     return (
@@ -172,9 +198,10 @@ export default function App() {
             onCreateNew={() => setShowNewVaultDialog(true)}
           />
           <Button
+            data-tour="new-note-button"
             intent="ghost"
             size="sm"
-            onClick={() => newNote()}
+            onClick={() => { justCreatedNoteRef.current = true; newNote(); }}
             disabled={!vaultPath}
           >
             + New
@@ -200,7 +227,7 @@ export default function App() {
             className="flex-1"
           />
         ) : (
-          <ul className="flex-1 min-h-0 overflow-y-auto py-2">
+          <ul data-tour="notes-list" className="flex-1 min-h-0 overflow-y-auto py-2">
             {displayedNotes.map((note) => (
               <NoteListItem
                 key={note.id || note.path}

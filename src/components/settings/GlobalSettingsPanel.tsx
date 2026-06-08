@@ -2,6 +2,8 @@ import { useSettingsStore } from '../../store/settings';
 import { pickFolder } from '../../lib/ipc';
 import { cn } from '../../lib/cn';
 import { Select } from '../ui/Select';
+import { useTour } from '../../hooks/useTour';
+import { ONBOARDING_TOUR_ID } from '../../lib/tours';
 import type { Theme, EditorFontSize, EditorFontFamily } from '../../types/settings';
 
 const THEMES: { value: Theme; label: string }[] = [
@@ -26,6 +28,7 @@ const FONT_FAMILIES: { value: EditorFontFamily; label: string }[] = [
 
 export function GlobalSettingsPanel() {
   const { settings, updateSettings } = useSettingsStore();
+  const { startTour, resetTour } = useTour();
 
   async function handleBrowseDefaultLocation() {
     const path = await pickFolder();
@@ -146,6 +149,26 @@ export function GlobalSettingsPanel() {
               </button>
             )}
           </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">Help</h3>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm font-medium text-heading">App tour</span>
+            <span className="text-xs text-foreground">Walk through the main features of m3m</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              resetTour(ONBOARDING_TOUR_ID);
+              startTour(ONBOARDING_TOUR_ID, { force: true });
+            }}
+            className="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-heading hover:bg-muted transition-colors whitespace-nowrap"
+          >
+            Take the tour
+          </button>
         </div>
       </section>
     </div>

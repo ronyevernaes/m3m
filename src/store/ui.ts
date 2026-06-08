@@ -20,6 +20,9 @@ interface UiState {
   setAdvancedSearchOpen: (open: boolean) => void;
   collapsedSections: Record<string, string[]>;
   toggleSectionCollapsed: (noteId: string, key: string) => void;
+  completedTours: string[];
+  markTourCompleted: (id: string) => void;
+  resetTour: (id: string) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -44,6 +47,13 @@ export const useUiStore = create<UiState>()(
             : [...current, key]
           return { collapsedSections: { ...s.collapsedSections, [noteId]: next } }
         }),
+      completedTours: [],
+      markTourCompleted: (id) =>
+        set((s) => ({
+          completedTours: s.completedTours.includes(id) ? s.completedTours : [...s.completedTours, id],
+        })),
+      resetTour: (id) =>
+        set((s) => ({ completedTours: s.completedTours.filter((t) => t !== id) })),
     }),
     {
       name: 'm3m-ui',
@@ -53,6 +63,7 @@ export const useUiStore = create<UiState>()(
         contextPanelTab: s.contextPanelTab,
         advancedSearchOpen: s.advancedSearchOpen,
         collapsedSections: s.collapsedSections,
+        completedTours: s.completedTours,
       }),
     }
   )

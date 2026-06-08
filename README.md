@@ -42,6 +42,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Markdown tables | GFM pipe-table syntax (`| A | B |` / `| - | - |`); full round-trip serialization via remark-gfm; "Table" toolbar button inserts a 2×2 table with a header row; Tab navigates between cells |
 | Markdown reference | `?` button at the far right of the editor toolbar opens a modal listing all supported Markdown syntax: inline formatting, headings, blocks, lists, tables, and wikilinks; Escape or backdrop click closes it |
 | Markdown paste | Pasting plain text containing markdown syntax (headings, bold, lists, tables, etc.) automatically parses and renders it as formatted content; pasting rich text from a browser preserves its HTML formatting |
+| Onboarding tours | driver.js-powered step-by-step tours; `general-onboarding-v1` fires on first vault open; `editor-onboarding-v1` fires on first new note creation; themed to match app colors in light and dark mode; restart via Settings → App → Help |
 
 ### Planned (P0)
 
