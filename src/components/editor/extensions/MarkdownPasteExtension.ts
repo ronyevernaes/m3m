@@ -18,7 +18,11 @@ export const MarkdownPasteExtension = Extension.create({
 
             const json = markdownToTipTap(text)
             const node = view.state.schema.nodeFromJSON(json)
-            const slice = new Slice(node.content, 0, 0)
+            const { $from } = view.state.selection
+            const isSingleParagraph =
+              node.childCount === 1 && node.firstChild?.type.name === 'paragraph'
+            const openDepth = isSingleParagraph && $from.parent.isTextblock ? 1 : 0
+            const slice = new Slice(node.content, openDepth, openDepth)
             view.dispatch(view.state.tr.replaceSelection(slice))
             return true
           },

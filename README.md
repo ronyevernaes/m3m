@@ -42,7 +42,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Export as PDF | "Export PDF" button in editor header; sets document title to note name for default filename; system print dialog via `window.print()`; print CSS hides all app chrome and forces light-mode colors |
 | Markdown tables | GFM pipe-table syntax (`| A | B |` / `| - | - |`); full round-trip serialization via remark-gfm; "Table" toolbar button inserts a 2×2 table with a header row; Tab navigates between cells |
 | Markdown reference | `?` button at the far right of the editor toolbar opens a modal listing all supported Markdown syntax: inline formatting, headings, blocks, lists, tables, and wikilinks; Escape or backdrop click closes it |
-| Markdown paste | Pasting plain text containing markdown syntax (headings, bold, lists, tables, etc.) automatically parses and renders it as formatted content; pasting rich text from a browser preserves its HTML formatting |
+| Markdown paste | Pasting plain text containing markdown syntax (headings, bold, lists, tables, etc.) automatically parses and renders it as formatted content; single-line pastes (e.g. URLs) are inserted inline — no spurious newlines when pasting inside `[Label](url)` syntax; pasting rich text from a browser preserves its HTML formatting |
 | Onboarding tours | driver.js-powered step-by-step tours; `general-onboarding-v1` fires on first vault open; `editor-onboarding-v1` fires on first new note creation; themed to match app colors in light and dark mode; restart via Settings → App → Help |
 
 ### Planned (P0)
