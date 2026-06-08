@@ -155,7 +155,7 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
   // Sync collapsed-section state into the extension storage before content loads.
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
-    const noteId = currentNote?.frontmatter.id ?? ''
+    const noteId = currentNote?.frontmatter.id ?? currentNote?.path ?? ''
     const ext = editor.extensionManager.extensions.find((e) => e.name === 'heading')
     if (!ext) return
     const storage = ext.storage as { collapsedSections: Set<string>; noteId: string }

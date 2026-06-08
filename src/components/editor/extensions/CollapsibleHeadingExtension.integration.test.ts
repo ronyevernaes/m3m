@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { Editor } from '@tiptap/core'
 import { StarterKit } from '@tiptap/starter-kit'
-import { CollapsibleHeadingExtension, findSections, makeSectionKey } from './CollapsibleHeadingExtension'
+import { CollapsibleHeadingExtension, findSections } from './CollapsibleHeadingExtension'
 
 function makeEditor(content = '') {
   return new Editor({
@@ -52,8 +52,8 @@ describe('CollapsibleHeadingExtension integration', () => {
     const doc = editor.state.doc
     const sections = findSections(doc)
     expect(sections).toHaveLength(2)
-    expect(sections[0].key).toBe(makeSectionKey(2, 'Section A', 0))
-    expect(sections[1].key).toBe(makeSectionKey(2, 'Section B', 0))
+    expect(sections[0].key).toBe('0')
+    expect(sections[1].key).toBe('1')
     editor.destroy()
   })
 
@@ -67,7 +67,7 @@ describe('CollapsibleHeadingExtension integration', () => {
     })
     const ext = editor.extensionManager.extensions.find(e => e.name === 'heading')!
     const storage = ext.storage as { collapsedSections: Set<string>; noteId: string }
-    const key = makeSectionKey(2, 'Intro', 0)
+    const key = '0'
 
     // Collapse
     storage.collapsedSections.add(key)

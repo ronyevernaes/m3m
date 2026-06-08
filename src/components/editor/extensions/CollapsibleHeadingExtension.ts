@@ -9,34 +9,25 @@ export const pluginKey = new PluginKey('collapsibleHeading');
 
 export type CollapsibleStorage = { collapsedSections: Set<string>; noteId: string };
 
-export function makeSectionKey(level: number, text: string, occurrenceIndex: number): string {
-  return `${level}:${text}:${occurrenceIndex}`;
-}
-
 export type Section = { key: string; headingPos: number; contentFrom: number; contentTo: number };
 
 export function findSections(doc: PmNode): Section[] {
-  const headings: Array<{ level: number; text: string; from: number; to: number }> = [];
+  const headings: Array<{ level: number; from: number; to: number }> = [];
 
   doc.forEach((node, offset) => {
     if (node.type.name === 'heading') {
       headings.push({
         level: node.attrs.level as number,
-        text: node.textContent,
         from: offset,
         to: offset + node.nodeSize,
       });
     }
   });
 
-  const occurrenceCount = new Map<string, number>();
   const sections: Section[] = [];
 
   for (let i = 0; i < headings.length; i++) {
     const h = headings[i];
-    const baseKey = `${h.level}:${h.text}`;
-    const idx = occurrenceCount.get(baseKey) ?? 0;
-    occurrenceCount.set(baseKey, idx + 1);
 
     let contentTo = doc.content.size;
     for (let j = i + 1; j < headings.length; j++) {
@@ -47,7 +38,7 @@ export function findSections(doc: PmNode): Section[] {
     }
 
     sections.push({
-      key: makeSectionKey(h.level, h.text, idx),
+      key: String(i),
       headingPos: h.from,
       contentFrom: h.to,
       contentTo,
