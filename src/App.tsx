@@ -24,6 +24,8 @@ import { useVaultSettingsStore } from './store/vaultSettings';
 import { FONT_SIZE_PX, FONT_FAMILY_CSS } from './types/settings';
 import { useTour } from './hooks/useTour';
 import { ONBOARDING_TOUR_ID, EDITOR_TOUR_ID } from './lib/tours';
+import { ChangelogDialog } from './components/changelog/ChangelogDialog';
+import { version } from '../package.json';
 import type { NoteListItem as NoteListItemType } from './types/note';
 
 export default function App() {
@@ -40,7 +42,7 @@ export default function App() {
     removeVaultEntry,
     revealVaultEntry,
   } = useVaultRegistry();
-  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth, completedTours } = useUiStore();
+  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth, completedTours, lastSeenVersion, setLastSeenVersion } = useUiStore();
   const { startTour } = useTour();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
@@ -48,6 +50,7 @@ export default function App() {
   const { vaultSettings, loaded: vaultSettingsLoaded } = useVaultSettingsStore();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<NoteListItemType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
@@ -94,6 +97,14 @@ export default function App() {
       const { settings: s } = useSettingsStore.getState();
       loadVaults(s.restoreLastVault);
     });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Show changelog once per app version.
+  useEffect(() => {
+    if (lastSeenVersion !== version) {
+      setLastSeenVersion(version);
+      setShowChangelog(true);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -239,6 +250,15 @@ export default function App() {
             ))}
           </ul>
         )}
+        <div className="px-4 py-2 border-t border-border flex-shrink-0 print:hidden">
+          <button
+            type="button"
+            onClick={() => setShowChangelog(true)}
+            className="text-xs text-foreground/50 hover:text-foreground transition-colors"
+          >
+            m3m v{version}
+          </button>
+        </div>
       </aside>
 
       <ResizeHandle side="left" initialWidth={sidebarWidth} onResize={setSidebarWidth} className="print:hidden" />
@@ -291,6 +311,8 @@ export default function App() {
       />
 
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+
+      {showChangelog && <ChangelogDialog onClose={() => setShowChangelog(false)} />}
 
       {update && !dismissed && (
         <UpdateBanner

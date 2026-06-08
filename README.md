@@ -36,6 +36,7 @@ m3m is a desktop knowledge base that treats `.md` files on disk as the one true 
 | Global settings | Theme, editor font family & size, restore-last-vault behaviour, default vault location |
 | Per-vault settings | Autosave delay, line width, vault name & color — stored in `.vault/settings.json` |
 | In-app updates | Checks for new releases on launch; dismissable install banner |
+| Changelog / What's New | Auto-appears on first launch after each version upgrade; all past releases rendered with colored section labels (Added, Fixed, Changed, etc.); accessible at any time via the `m3m vX.Y.Z` badge at the bottom of the sidebar |
 | Vault Manager | Create, open, switch, rename, remove vaults |
 | Note tabs | Multi-tab strip above the editor; each opened note is a separate tab; dirty indicator dot; Cmd+W closes the active tab; auto-saves dirty tabs on close and on app quit |
 | Export as PDF | "Export PDF" button in editor header; sets document title to note name for default filename; system print dialog via `window.print()`; print CSS hides all app chrome and forces light-mode colors |

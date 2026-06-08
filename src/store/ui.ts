@@ -23,6 +23,8 @@ interface UiState {
   completedTours: string[];
   markTourCompleted: (id: string) => void;
   resetTour: (id: string) => void;
+  lastSeenVersion: string;
+  setLastSeenVersion: (v: string) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -54,6 +56,8 @@ export const useUiStore = create<UiState>()(
         })),
       resetTour: (id) =>
         set((s) => ({ completedTours: s.completedTours.filter((t) => t !== id) })),
+      lastSeenVersion: '',
+      setLastSeenVersion: (v) => set({ lastSeenVersion: v }),
     }),
     {
       name: 'm3m-ui',
@@ -64,6 +68,7 @@ export const useUiStore = create<UiState>()(
         advancedSearchOpen: s.advancedSearchOpen,
         collapsedSections: s.collapsedSections,
         completedTours: s.completedTours,
+        lastSeenVersion: s.lastSeenVersion,
       }),
     }
   )
