@@ -225,4 +225,4 @@ See [RELEASE.md](RELEASE.md) for the full release process.
 
 ## License
 
-TBD
+MIT — see [LICENSE](LICENSE)
