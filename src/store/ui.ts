@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ContextPanelTab = 'details' | 'links' | 'insights' | 'agent';
+export type ContextPanelTab = 'details' | 'links' | 'insights' | 'agent' | 'outline';
 
 const PANEL_MIN = 180;
 const PANEL_MAX = 480;
@@ -18,6 +18,8 @@ interface UiState {
   setContextPanelWidth: (w: number) => void;
   setContextPanelTab: (tab: ContextPanelTab) => void;
   setAdvancedSearchOpen: (open: boolean) => void;
+  scrollToHeading: ((key: string) => void) | null;
+  registerScrollToHeading: (fn: ((key: string) => void) | null) => void;
   collapsedSections: Record<string, string[]>;
   toggleSectionCollapsed: (noteId: string, key: string) => void;
   completedTours: string[];
@@ -40,6 +42,8 @@ export const useUiStore = create<UiState>()(
       setContextPanelWidth: (w) => set({ contextPanelWidth: clamp(w) }),
       setContextPanelTab: (tab) => set({ contextPanelTab: tab }),
       setAdvancedSearchOpen: (open) => set({ advancedSearchOpen: open }),
+      scrollToHeading: null,
+      registerScrollToHeading: (fn) => set({ scrollToHeading: fn }),
       collapsedSections: {},
       toggleSectionCollapsed: (noteId, key) =>
         set((s) => {

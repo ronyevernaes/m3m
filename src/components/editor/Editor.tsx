@@ -1,7 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { LinkExtension } from './extensions/LinkExtension'
-import { CollapsibleHeadingExtension } from './extensions/CollapsibleHeadingExtension'
+import { CollapsibleHeadingExtension, findSections } from './extensions/CollapsibleHeadingExtension'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
@@ -17,6 +17,7 @@ import { MarkdownPasteExtension } from './extensions/MarkdownPasteExtension'
 import { EditorToolbar } from './EditorToolbar'
 import { LinkTooltip } from './LinkTooltip'
 import { NodeActionsPanel } from './node-actions/NodeActionsPanel'
+import { TextSelection } from '@tiptap/pm/state'
 import { openUrl } from '../../lib/ipc'
 import { Button } from '../ui/Button'
 import { GearIcon } from '../icons/GearIcon'
@@ -162,6 +163,34 @@ export function Editor({ className, onSettingsClick }: EditorProps) {
     const persisted = useUiStore.getState().collapsedSections[noteId] ?? []
     storage.collapsedSections = new Set(persisted)
   }, [editor, currentNote?.path]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Register scroll-to-heading handler for the Outline tab.
+  useEffect(() => {
+    const { registerScrollToHeading } = useUiStore.getState()
+    if (!editor || editor.isDestroyed) {
+      registerScrollToHeading(null)
+      return
+    }
+    registerScrollToHeading((sectionKey: string) => {
+      if (!editor || editor.isDestroyed) return
+      const sections = findSections(editor.state.doc)
+      const section = sections.find((s) => s.key === sectionKey)
+      if (!section) return
+      const tr = editor.state.tr.setSelection(
+        TextSelection.near(editor.state.doc.resolve(section.headingPos + 1)),
+      )
+      editor.view.dispatch(tr)
+      const domNode = editor.view.nodeDOM(section.headingPos)
+      if (domNode instanceof Element) {
+        domNode.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        editor.view.dispatch(editor.state.tr.scrollIntoView())
+      }
+    })
+    return () => {
+      useUiStore.getState().registerScrollToHeading(null)
+    }
+  }, [editor])
 
   // Load note content into editor when the open note changes.
   useEffect(() => {

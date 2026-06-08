@@ -6,6 +6,7 @@ import { DetailsTab } from './DetailsTab';
 import { LinksAndBacklinksTab } from './LinksAndBacklinksTab';
 import { InsightsTab } from './InsightsTab';
 import { AgentTab } from './AgentTab';
+import { OutlineTab } from './OutlineTab';
 
 interface ContextPanelProps {
   onOpenNote: (path: string) => void;
@@ -27,6 +28,7 @@ export function ContextPanel({ onOpenNote, width = 256, className }: ContextPane
       <ContextPanelTabs activeTab={activeTab} onTabChange={setContextPanelTab} />
       {activeTab === 'details' && <DetailsTab />}
       {activeTab === 'links' && <LinksAndBacklinksTab onOpenNote={onOpenNote} />}
+      {activeTab === 'outline' && <OutlineTab />}
       {activeTab === 'insights' && <InsightsTab />}
       {activeTab === 'agent' && <AgentTab />}
     </div>

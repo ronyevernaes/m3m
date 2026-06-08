@@ -4,6 +4,7 @@ import type { ContextPanelTab } from '../../store/ui';
 const TABS: { id: ContextPanelTab; label: string }[] = [
   { id: 'details', label: 'Details' },
   { id: 'links', label: 'Links' },
+  { id: 'outline', label: 'Outline' },
   { id: 'insights', label: 'Insights' },
   { id: 'agent', label: 'Agent' },
 ];
