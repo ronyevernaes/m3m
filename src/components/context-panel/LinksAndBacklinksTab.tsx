@@ -37,7 +37,7 @@ export function LinksAndBacklinksTab({ onOpenNote }: LinksAndBacklinksTabProps) 
               intent="ghost"
               size="sm"
               onClick={() => onOpenNote(note.path)}
-              className="w-full justify-start rounded-none font-normal truncate text-foreground hover:bg-muted"
+              className="w-full justify-start rounded-none font-normal truncate text-foreground hover:bg-muted pl-5"
             >
               {note.title || 'Untitled'}
             </Button>
@@ -60,7 +60,7 @@ export function LinksAndBacklinksTab({ onOpenNote }: LinksAndBacklinksTabProps) 
               intent="ghost"
               size="sm"
               onClick={() => onOpenNote(item.path)}
-              className="w-full justify-start rounded-none font-normal truncate text-foreground hover:bg-muted"
+              className="w-full justify-start rounded-none font-normal truncate text-foreground hover:bg-muted pl-5"
             >
               {item.title || 'Untitled'}
             </Button>

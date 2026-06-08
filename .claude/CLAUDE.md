@@ -163,3 +163,4 @@ When starting work on a specific area, include the relevant section from `SPEC.m
 | `TagPill` | CVA; variants: `default` (read-only), `interactive` (clickable), `removable` (with × button) |
 | `FieldLabel` | Uppercase tracking-wider section label |
 | `ConfirmDialog` | Modal for destructive actions |
+| `Accordion` | Collapsible section with title, `count` badge, and animated chevron; `defaultOpen` prop (default `true`); local `useState` — not persisted |
