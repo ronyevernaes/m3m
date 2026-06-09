@@ -3,7 +3,7 @@ import { Editor } from '@tiptap/core'
 import { StarterKit } from '@tiptap/starter-kit'
 import { CollapsibleHeadingExtension, findSections } from './CollapsibleHeadingExtension'
 
-function makeEditor(content = '') {
+function makeEditor(content: string | object = '') {
   return new Editor({
     element: document.createElement('div'),
     extensions: [

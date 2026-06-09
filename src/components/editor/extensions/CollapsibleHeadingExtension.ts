@@ -1,5 +1,6 @@
 import { Node, mergeAttributes, textblockTypeInputRule } from '@tiptap/core';
-import type { Editor, NodeViewRendererProps } from '@tiptap/core';
+import type { CommandProps, Editor, NodeViewRendererProps } from '@tiptap/core';
+import type { Level } from '@tiptap/extension-heading';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import type { Node as PmNode } from '@tiptap/pm/model';
@@ -180,13 +181,13 @@ export const CollapsibleHeadingExtension = Node.create({
     return {
       setHeading:
         (attributes: { level: number }) =>
-        ({ commands }: { commands: Record<string, (...args: unknown[]) => boolean> }) => {
+        ({ commands }: CommandProps) => {
           if (!(this.options.levels as number[]).includes(attributes.level)) return false;
           return commands.setNode(this.name, attributes);
         },
       toggleHeading:
         (attributes: { level: number }) =>
-        ({ commands }: { commands: Record<string, (...args: unknown[]) => boolean> }) => {
+        ({ commands }: CommandProps) => {
           if (!(this.options.levels as number[]).includes(attributes.level)) return false;
           return commands.toggleNode(this.name, 'paragraph', attributes);
         },
@@ -196,7 +197,7 @@ export const CollapsibleHeadingExtension = Node.create({
   addKeyboardShortcuts() {
     return (this.options.levels as number[]).reduce(
       (acc: Record<string, () => boolean>, level: number) => {
-        acc[`Mod-Alt-${level}`] = () => this.editor.commands.toggleHeading({ level });
+        acc[`Mod-Alt-${level}`] = () => this.editor.commands.toggleHeading({ level: level as Level });
         return acc;
       },
       {},
