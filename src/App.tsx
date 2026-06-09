@@ -42,7 +42,7 @@ export default function App() {
     removeVaultEntry,
     revealVaultEntry,
   } = useVaultRegistry();
-  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth, completedTours, lastSeenVersion, setLastSeenVersion } = useUiStore();
+  const { selectedTag, setSelectedTag, sidebarWidth, contextPanelWidth, setSidebarWidth, setContextPanelWidth, completedTours } = useUiStore();
   const { startTour } = useTour();
   const { results, isSearching, search, clearSearch } = useSearch();
   const { settings, loadSettings } = useSettingsStore();
@@ -50,7 +50,14 @@ export default function App() {
   const { vaultSettings, loaded: vaultSettingsLoaded } = useVaultSettingsStore();
   const [showNewVaultDialog, setShowNewVaultDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showChangelog, setShowChangelog] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(() => {
+    const { lastSeenVersion, setLastSeenVersion } = useUiStore.getState();
+    if (lastSeenVersion !== version) {
+      setLastSeenVersion(version);
+      return true;
+    }
+    return false;
+  });
   const [noteToDelete, setNoteToDelete] = useState<NoteListItemType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const displayedNotes = selectedTag ? notes.filter((n) => n.tags.includes(selectedTag)) : notes;
@@ -99,13 +106,6 @@ export default function App() {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Show changelog once per app version.
-  useEffect(() => {
-    if (lastSeenVersion !== version) {
-      setLastSeenVersion(version);
-      setShowChangelog(true);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const root = document.documentElement;
