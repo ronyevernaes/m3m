@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-09
+
+### Added
+- Multi-tab note editing — open multiple notes with Cmd+W to close a tab
+- Collapsible sections — click the chevron on any heading to fold/unfold content below it
+- GFM table support — create and edit pipe tables; insert via toolbar
+- Markdown paste — pasting plain text auto-converts markdown syntax to rich content
+- PDF export — export the current note as a PDF from the editor toolbar
+- Blockquote support — type `> ` or use the toolbar button to create blockquotes
+- What's New dialog — auto-shown on first launch after an upgrade; revisit via the version button
+- Onboarding tours — guided walkthroughs on first vault open and first note create
+- Outline tab — new context-panel tab for heading navigation with smooth-scroll
+- Markdown reference — `?` button in the toolbar opens a quick-reference card
+- Editor font family setting — choose your preferred editor font in Settings
+- MIT license
+
+### Changed
+- Links and Backlinks merged into a single unified Links tab in the context panel
+- Note ID field removed from the Details tab (internal identifier; not useful to surface)
+- DevTools disabled in production builds; hidden by default in development
+
+### Fixed
+- Heading levels h3–h6 and inline marks (bold, italic) not styled correctly in the editor
+- Single-paragraph markdown paste now merges inline instead of inserting a new block
+- Collapsible section state no longer conflicts between headings with matching text
+
+---
+
 ## [0.2.0] - 2026-05-25
 
 ### Added
